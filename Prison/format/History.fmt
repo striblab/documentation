@@ -1,0 +1,8 @@
+10.0
+6
+1       SQLCHAR             0       6       ""       1     OID                  SQL_Latin1_General_CP1_CI_AS
+2       SQLCHAR             0       8       ""       2     StatDate             SQL_Latin1_General_CP1_CI_AS
+3       SQLCHAR             0       50      ""       3     CurrStat             SQL_Latin1_General_CP1_CI_AS
+4       SQLCHAR             0       50      ""       4     StatType             SQL_Latin1_General_CP1_CI_AS
+5       SQLCHAR             0       100     ""       5     AuthID               SQL_Latin1_General_CP1_CI_AS
+6       SQLCHAR             0       255     "\r\n"   6     CurrLoc              SQL_Latin1_General_CP1_CI_AS

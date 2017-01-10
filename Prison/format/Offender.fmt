@@ -1,0 +1,16 @@
+10.0
+14
+1       SQLCHAR             0       6       ""       1     OID                                          SQL_Latin1_General_CP1_CI_AS
+2       SQLCHAR             0       185     ""       2     CommName                                     SQL_Latin1_General_CP1_CI_AS
+3       SQLCHAR             0       185     ""       3     LegName                                      SQL_Latin1_General_CP1_CI_AS
+4       SQLCHAR             0       100     ""       4     AuthID                                       SQL_Latin1_General_CP1_CI_AS
+5       SQLCHAR             0       1       ""       5     Sex                                          SQL_Latin1_General_CP1_CI_AS
+6       SQLCHAR             0       8       ""       6     DOB                                          SQL_Latin1_General_CP1_CI_AS
+7       SQLCHAR             0       1       ""       7     LegStat                                      SQL_Latin1_General_CP1_CI_AS
+8       SQLCHAR             0       50      ""       8     CurrStat                                     SQL_Latin1_General_CP1_CI_AS
+9      SQLCHAR             0       50      ""        9    StatType                                     SQL_Latin1_General_CP1_CI_AS
+10      SQLCHAR             0       8       ""       10    StatDate                                     SQL_Latin1_General_CP1_CI_AS
+11      SQLCHAR             0       255     ""       11    CurrLoc                                      SQL_Latin1_General_CP1_CI_AS
+12      SQLCHAR             0       1       ""       12    ISRecSend                                    SQL_Latin1_General_CP1_CI_AS
+13      SQLCHAR             0       20      ""       13    DrvrLicID                                    SQL_Latin1_General_CP1_CI_AS
+14      SQLCHAR             0       2       "\r\n"   14    DrvrLicState                                 SQL_Latin1_General_CP1_CI_AS

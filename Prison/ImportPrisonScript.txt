@@ -1,0 +1,256 @@
+--NOTES: This is for importing state prison records from the Minnesota Department of Corrections
+Data came in 2015 as fixed-width files with format files
+The script below creates tables, then does bulk inserts to import the data to stnewsdb3 and run some SQL update queries
+There are some fields that appear to be dates (i.e. "admit date") but the data includes text values (such as "indeterminate"), so those have
+been set up as varchar fields
+
+
+
+CREATE TABLE dbo.Prison_Offender (
+	OID varchar(50),
+	ObligationIdentifier varchar(50),
+	CommName varchar(200),
+	LegName varchar(200),
+	AuthID varchar(110),
+	Sex varchar(50),
+	DOB datetime,
+	LegStat varchar(50),
+	CurrStat varchar(50),
+	StatType varchar(50),
+	StatDate datetime,
+	CurrLocation varchar(255),
+	ISRecSend varchar(50),
+	DrvrLicID  varchar(50),
+	DrvrLicState  varchar(50),
+	StribImportDate datetime,
+	LastName varchar(50),
+	RestName varchar(50),
+	source varchar(10),
+	no_obligation varchar(10)
+		);
+GO	
+
+
+CREATE TABLE dbo.Prison_Sentence(
+	OID varchar(50),
+	ObligationIdentifier varchar(50),
+	SentNo varchar(50),
+	AdmitDate varchar(50),
+	LegStat varchar(50),
+	SentType varchar(50),
+	SentAuth varchar(255),
+	SentStat varchar(50),
+	MaxYears varchar(50),
+	MaxMonths varchar(50),
+	MaxDays varchar(50),
+	JailCredit varchar(50),
+	EffSentDate datetime,
+	ExpDate varchar(50),
+	RelDate varchar(50),
+	CondRel varchar(50),
+	ActiveOffense varchar(50),
+	StribImportDate datetime,
+	source varchar(10),
+	governing varchar(10)
+			);
+GO	
+
+
+CREATE TABLE dbo.Prison_Alias(
+	OID varchar(50),
+	AliasName varchar(200),
+	NameType varchar(50),
+	DOB datetime,
+	Sex varchar(50),
+	StribImportDate datetime,
+	source varchar(10)
+
+			);
+GO	
+
+CREATE TABLE dbo.Prison_History(
+	OID varchar(50),
+	StatDate datetime,
+	CurrStat varchar(50),
+	StatType varchar(50),
+	AuthID varchar(100),
+	CurrLoc varchar(255),
+	StribImportDate datetime,
+	source varchar(10)
+
+			);
+GO	
+
+
+
+CREATE TABLE dbo.Prison_Obligation(
+	OID varchar(50),
+	ObligationIdentifier varchar(50),
+	MNPrisCaseClassType varchar(50),
+	StatusTypeText varchar(50),
+	AdmitDate datetime,
+	ExpDate varchar(50),
+	RelDate varchar(50),
+	OverallMnDOCOffenseCategoryType varchar(50),
+	ActiveMnDOCOffenseCategoryType  varchar(50),
+	GoverningAdmitJurisdiction varchar(255),
+	GoverningReleaseJurisdiction varchar(255),
+	ObligationBasis varchar(100),
+	StribImportDate datetime,
+	source varchar(10)
+				);
+GO	
+
+
+
+
+BULK INSERT  Prison_Alias
+  FROM '\\stncar\d$\Prison\tables\Alias.txt' 
+  WITH
+     (
+        FORMATFILE = '\\stncar\d$\Prison\format\Alias.fmt' ,
+        FirstRow=1,
+		ERRORFILE='\\stncar\d$\prison\alias_errors.txt' ,
+		MAXERRORS=20
+     );
+
+go
+
+BULK INSERT  Prison_Sentence
+  FROM '\\stncar\d$\Prison\tables\Sentence.txt' 
+  WITH
+     (
+        FORMATFILE = '\\stncar\d$\Prison\format\Sentence.fmt' ,
+        FirstRow=1,
+		ERRORFILE='\\stncar\d$\prison\sentence_errors.txt' ,
+		MAXERRORS=20
+     );
+
+go
+
+
+BULK INSERT  Prison_Offender
+  FROM '\\stncar\d$\Prison\tables\Offender.txt' 
+  WITH
+     (
+        FORMATFILE = '\\stncar\d$\Prison\format\Offender.fmt' ,
+        FirstRow=1,
+		ERRORFILE='\\stncar\d$\prison\offender_errors.txt' ,
+		MAXERRORS=20
+     );
+
+go
+
+BULK INSERT  Prison_History
+  FROM '\\stncar\d$\Prison\tables\History.txt' 
+  WITH
+     (
+        FORMATFILE = '\\stncar\d$\Prison\format\History.fmt' ,
+        FirstRow=1,
+		ERRORFILE='\\stncar\d$\prison\history_errors.txt' ,
+		MAXERRORS=20
+     );
+
+go
+
+
+BULK INSERT  Prison_Obligation
+  FROM '\\stncar\d$\Prison\tables\Obligation.txt' 
+  WITH
+     (
+        FORMATFILE = '\\stncar\d$\Prison\format\Obligation.fmt' ,
+        FirstRow=1,
+		ERRORFILE='\\stncar\d$\prison\obligation_errors.txt' ,
+		MAXERRORS=20
+     );
+
+go
+
+update prison_alias set stribimportdate=getdate()
+go
+update prison_sentence set stribimportdate=getdate()
+go
+update prison_offender set stribimportdate=getdate()
+go
+update prison_history set stribimportdate=getdate()
+go
+update prison_obligation set stribimportdate=getdate()
+go
+
+
+
+update prison_alias set [source]='COMS5'
+go
+update prison_sentence set  [source]='COMS5'
+go
+update prison_offender set  [source]='COMS5'
+go
+update prison_history set  [source]='COMS5'
+go
+update prison_obligation set  [source]='COMS5'
+go
+
+
+
+
+
+update prison_offender set lastname= rtrim(left(commname, charindex(',', commname)-1)) where commname like '%,%'
+go
+update prison_offender set restname= ltrim(substring(commname, charindex(',', commname)+1, 100)) where commname like '%,%'
+
+
+update prison_offender set lastname=LTRIM(UPPER(LASTNAME))
+update prison_offender set RESTNAME=LTRIM(UPPER(RESTNAME))
+
+
+
+
+CREATE NONCLUSTERED INDEX [idxOID] ON [dbo].[Prison_Alias]
+(
+	[OID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+
+CREATE NONCLUSTERED INDEX [idxOID] ON [dbo].[Prison_History]
+(
+	[OID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [idxOID] ON [dbo].[Prison_Obligation]
+(
+	[OID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [idxOID] ON [dbo].[Prison_Offender]
+(
+	[OID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [idxOID] ON [dbo].[Prison_Sentence]
+(
+	[OID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+
+CREATE NONCLUSTERED INDEX [idxLastname] ON [dbo].[Prison_Offender]
+(
+	[LastName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [idxRestname] ON [dbo].[Prison_Offender]
+(
+	[RestName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [idxDOB] ON [dbo].[Prison_Offender]
+(
+	[DOB] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
