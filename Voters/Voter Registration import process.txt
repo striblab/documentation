@@ -1,35 +1,39 @@
 Voter Registration import process:
-The Minnesota Secretary of Stateís office will post data for us to their FTP server the first week of each quarter of the year ñ so the first week of January, first week of April, first week of July, and first week of October. 
-We have to pay for these 4 data dumps in advance. Our first payment was beginning of Jan 2016 and thatís also when we first got the data through this route.
-The FTP site is ftp.sos.state.mn.us†† usually works best with FTP client software (wsftp, cuteftp, cyberduck, winscp, etc) 
+The Minnesota Secretary of State‚Äôs office will post data for us to their FTP server the first week of each quarter of the year ‚Äì so the first week of January, first week of April, first week of July, and first week of October. 
+We have to pay for these 4 data dumps in advance. Our first payment was beginning of Jan 2016 and that‚Äôs also when we first got the data through this route.
+The FTP site is ftp.sos.state.mn.us¬†¬† usually works best with FTP client software (wsftp, cuteftp, cyberduck, winscp, etc) 
 
        User: startribdata
        Password: TV1GhN32+eo3Q61
        The files are encrypted and compressed, no client software is needed, the password for decrypting is 2016StarTribData 
 
 There will be 18 compressed files.
---The 8 starting with ìst_electionî are for a voting history table (all files have same layout)
---The 8 starting with ìst_voterî are for a voter registration table (all files have same layout)
---The other ñ ST_PFlist and ST_PPlist ñ will not be imported to Uniquery, but they are good to have on hand for other uses. So they should just be downloaded. 
+--The 8 starting with ‚Äúst_election‚Äù are for a voting history table (all files have same layout)
+--The 8 starting with ‚Äúst_voter‚Äù are for a voter registration table (all files have same layout)
+--The other ‚Äì ST_PFlist and ST_PPlist ‚Äì will not be imported to Uniquery, but they are good to have on hand for other uses. So they should just be downloaded. 
 The files are all comma-delimited with double quotes as text qualifers
+
+
+****THESE DIRECTIONS ARE FOR IMPORTING TO SQL SERVER. NEEDS TO BE UPDATED FOR MYSQL*****
+
 
 Save the files to stncar's virtual server D drive:
 D:\Voters
 There are several important files in that directory:
-* VoterImport directory ñ this is where the Visual Studio package is for importing the data. 
-* VoterImport3.dtsx ñ this is part of the package for importing the data (save it just in case)
-* CreateVoterRegTAble.sql ñ the SQL needed for creating the table that the data gets imported into on stnewsdb3
-* CreateIndexes for Voters.sql ñ this is the SQL code for creating the indexes after moving the data to stnewsdb1
+* VoterImport directory ‚Äì this is where the Visual Studio package is for importing the data. 
+* VoterImport3.dtsx ‚Äì this is part of the package for importing the data (save it just in case)
+* CreateVoterRegTAble.sql ‚Äì the SQL needed for creating the table that the data gets imported into on stnewsdb3
+* CreateIndexes for Voters.sql ‚Äì this is the SQL code for creating the indexes after moving the data to stnewsdb1
 * voter reg record layout
 
 How the Voter registration import works :
 1) Download the files from the FTP site and then unzip them (they have a password on them, so this unzipping process takes a little while). Make sure the voter text files (voter1.txt, voter2.txt, etc) are in VoterReg directory and the election history (election01.txt, etc) are in the ElectionHistory directory. Make sure all are unzipped.
-2) Go to stsqlnewsusr (sandbox1 database). Make sure that thereís a table in there called ìvoterreg_importî and one called "voterhistory_import" Doesnít matter if there is data in there or not. The import process empties the tables before it starts.  Make sure the SOS hasnít changed the field names or the structure in any way. Note: there are some fields at the end of this table that weíve added (stribimportdate, countyname, etc). Make sure that stored procedure is still in the stsqlnewsusr database. 
-3) Open Visual Studio and the integrated services project that is stored under the ìVoterImportî directory. You'll see there are two dtsx packages in there -- one is "voterimport3" which is for the voter registration tables; and the other is "voter import iport" which is for importing the election history tables.
+2) Go to stsqlnewsusr (sandbox1 database). Make sure that there‚Äôs a table in there called ‚Äúvoterreg_import‚Äù and one called "voterhistory_import" Doesn‚Äôt matter if there is data in there or not. The import process empties the tables before it starts.  Make sure the SOS hasn‚Äôt changed the field names or the structure in any way. Note: there are some fields at the end of this table that we‚Äôve added (stribimportdate, countyname, etc). Make sure that stored procedure is still in the stsqlnewsusr database. 
+3) Open Visual Studio and the integrated services project that is stored under the ‚ÄúVoterImport‚Äù directory. You'll see there are two dtsx packages in there -- one is "voterimport3" which is for the voter registration tables; and the other is "voter import iport" which is for importing the election history tables.
 
 Go into each one and follow same steps:
-As long as the names of those text files ñ and the location where they are saved ñ are the same as last time, this shouldnít require too much headache.
-Under ìconnection managersî at the bottom of the screen, youíll see ìvoter1î, ìvoter2î, etc. Right click on one of them and choose ìedit.î (Do the same for election, except the files are called "election1", 'election2", etc)
+As long as the names of those text files ‚Äì and the location where they are saved ‚Äì are the same as last time, this shouldn‚Äôt require too much headache.
+Under ‚Äúconnection managers‚Äù at the bottom of the screen, you‚Äôll see ‚Äúvoter1‚Äù, ‚Äúvoter2‚Äù, etc. Right click on one of them and choose ‚Äúedit.‚Äù (Do the same for election, except the files are called "election1", 'election2", etc)
 You can see the path and file name in there from the last time. Make sure that is still valid.
 
 If any fields have changed, you can click on Advanced (on the left) to try to deal with that. 
@@ -42,15 +46,26 @@ The voter history database needs to have some additional work done on it (adding
 The voter reg table should be ready for Uniquery without anything additional. Just make sure the update queries all ran correctly. 
 
 
-
-
-
-
-
-Back in Visual Studio, youíll see the ìControl Flowî tab at the top. This is showing all the steps. The first step deletes any records from the table in db3. The second step imports voter1.txt, the next imports voter2.txt, etc. The final step runs a stored procedure saved on db3 that runs a bunch of data cleanup commands, including populating the ìaddressî and ìcountynameî fields. 
-4) As long as all the connections are working and there are not warning messages in Visual Studio, you can push the run button to execute this package. It will take awhile to run and will give you a window where you see it going through its processes ñ including showing you any error messages.
+Back in Visual Studio, you‚Äôll see the ‚ÄúControl Flow‚Äù tab at the top. This is showing all the steps. The first step deletes any records from the table in db3. The second step imports voter1.txt, the next imports voter2.txt, etc. The final step runs a stored procedure saved on db3 that runs a bunch of data cleanup commands, including populating the ‚Äúaddress‚Äù and ‚Äúcountyname‚Äù fields. 
+4) As long as all the connections are working and there are not warning messages in Visual Studio, you can push the run button to execute this package. It will take awhile to run and will give you a window where you see it going through its processes ‚Äì including showing you any error messages.
 5) Once the import works properly, go into db3 and run a few queries to make sure it looks ok. 
-6) Export the data over to db1 in the Voters database. I named the last file ìVoterRegJan16î, so I think it makes sense to continue that naming convention
-7) Once itís in db1, then open up the SQL code for the indexes and run that on the new table in db1. 
-8) Go into the Uniquery manager in Access and point the Voter Registration to this new table and update any metadata (i.e. ìlast updated dateî), etc.
+6) Export the data over to db1 in the Voters database. I named the last file ‚ÄúVoterRegJan16‚Äù, so I think it makes sense to continue that naming convention
+7) Once it‚Äôs in db1, then open up the SQL code for the indexes and run that on the new table in db1. 
+8) Go into the Uniquery manager in Access and point the Voter Registration to this new table and update any metadata (i.e. ‚Äúlast updated date‚Äù), etc.
+
+***************************
+
+UPDATING VOTER REG ARCHIVE AND VOTER HISTORY ARCHIVE:
+The table called "voter_RegArchive" contains records from past batches of voter registration data. It's been culled down so that it only includes either new voters or updated records for existing voters. It looks like in the data that was put in this table prior to my time, it includes situations where the address was slightly different from one year to another. I set it up so that I only added a new record for an existing voter if the "registrationdate" field was more current.
+
+There are saved queries in the newsroomdata database on amazon1 that are set up to find and append new records for the archive table. 
+
+I'm concerned, though, that this archive table is going to get too large and isn't really the best approach for archiving these records. 
+
+Also, I didn't update this archive in 2015 and I didn't keep the voters data we got in 2015, so there is a bit of a gap. 
+
+
+
+
+
 
