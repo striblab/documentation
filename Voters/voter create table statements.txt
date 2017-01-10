@@ -1,0 +1,164 @@
+CREATE TABLE `VoterReg_current` (
+  `VoterID` varchar(50) NOT NULL,
+  `CountyCode` varchar(50) DEFAULT NULL,
+  `FirstName` varchar(75) DEFAULT NULL,
+  `MiddleName` varchar(75) DEFAULT NULL,
+  `LastName` varchar(75) DEFAULT NULL,
+  `NameSuffix` varchar(50) DEFAULT NULL,
+  `HouseNumber` varchar(50) DEFAULT NULL,
+  `StreetName` varchar(100) DEFAULT NULL,
+  `UnitType` varchar(50) DEFAULT NULL,
+  `UnitNumber` varchar(50) DEFAULT NULL,
+  `Address2` varchar(100) DEFAULT NULL,
+  `City` varchar(50) DEFAULT NULL,
+  `State` varchar(50) DEFAULT NULL,
+  `ZipCode` varchar(50) DEFAULT NULL,
+  `MailAddress` varchar(100) DEFAULT NULL,
+  `MailCity` varchar(50) DEFAULT NULL,
+  `MailState` varchar(50) DEFAULT NULL,
+  `MailZipCode` varchar(50) DEFAULT NULL,
+  `PhoneNumber` varchar(50) DEFAULT NULL,
+  `RegistrationDate` datetime DEFAULT NULL,
+  `DOBYear` varchar(50) DEFAULT NULL,
+  `StateMCDCode` varchar(50) DEFAULT NULL,
+  `MCDName` varchar(50) DEFAULT NULL,
+  `PrecinctCode` varchar(50) DEFAULT NULL,
+  `PrecinctName` varchar(50) DEFAULT NULL,
+  `WardCode` varchar(50) DEFAULT NULL,
+  `School` varchar(50) DEFAULT NULL,
+  `SchSub` varchar(50) DEFAULT NULL,
+  `Judicial` varchar(50) DEFAULT NULL,
+  `Legislative` varchar(50) DEFAULT NULL,
+  `StateSen` varchar(50) DEFAULT NULL,
+  `Congressional` varchar(50) DEFAULT NULL,
+  `Commissioner` varchar(50) DEFAULT NULL,
+  `Park` varchar(50) DEFAULT NULL,
+  `SoilWater` varchar(50) DEFAULT NULL,
+  `Hospital` varchar(50) DEFAULT NULL,
+  `legacyid` varchar(50) DEFAULT NULL,
+  `Address` varchar(255) DEFAULT NULL,
+  `countyname` varchar(50) DEFAULT NULL,
+  `stribImportDate` datetime DEFAULT NULL,
+  `RegistrationDatetxt` varchar(50) DEFAULT NULL,
+  KEY `voterid` (`VoterID`),
+  KEY `idx_firstname` (`FirstName`),
+  KEY `idx_lastname` (`LastName`),
+  KEY `idx_middlename` (`MiddleName`),
+  KEY `idx_dobyear` (`DOBYear`),
+  KEY `idx_city` (`City`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+
+
+
+CREATE TABLE `VoterHistory_current` (
+  `VoterID` varchar(50) NOT NULL,
+  `ElectionDatetxt` varchar(50) DEFAULT NULL,
+  `ElectionDescription` varchar(150) DEFAULT NULL,
+  `VotingMethod` varchar(50) DEFAULT NULL,
+  `ElectionDate` datetime DEFAULT NULL,
+  `stribImportDate` datetime DEFAULT NULL,
+  KEY `idx_voterid` (`VoterID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+
+
+CREATE TABLE `voter_lkup_county` (
+  `countyname` varchar(50) DEFAULT NULL,
+  `COUNTYFIPS` varchar(50) DEFAULT NULL,
+  `CountyID` varchar(50) DEFAULT NULL,
+  `TextCountyID` varchar(50) DEFAULT NULL,
+  `FullFIPS` varchar(50) DEFAULT NULL,
+  `Region` varchar(50) DEFAULT NULL,
+  `POP2000` int(11) DEFAULT NULL,
+  `Pop2014` int(11) DEFAULT NULL,
+  `PopShare` float DEFAULT NULL,
+  `VotingAge ShareCategory` varchar(50) DEFAULT NULL,
+  `age18_21` int(11) DEFAULT NULL,
+  `Age22_34` int(11) DEFAULT NULL,
+  `Age35_54` int(11) DEFAULT NULL,
+  `Age55_69` int(11) DEFAULT NULL,
+  `Age70_84` int(11) DEFAULT NULL,
+  `Age85up` int(11) DEFAULT NULL,
+  `TotalVotingAge` int(11) DEFAULT NULL,
+  `PctMillentials` float DEFAULT NULL,
+  `PctGenX` float DEFAULT NULL,
+  `PctBoomers` float DEFAULT NULL,
+  `VotingAgeShare` float DEFAULT NULL,
+  `DFL_PREZ_WINS` int(11) DEFAULT NULL,
+  `OTHER_PREZ_WINS` int(11) DEFAULT NULL,
+  `GOP_PREZ_WINS` int(11) DEFAULT NULL,
+  KEY `idx_textcountyid` (`TextCountyID`),
+  KEY `idx_fullfips` (`FullFIPS`),
+  KEY `idx_fips` (`COUNTYFIPS`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+
+
+CREATE TABLE `Voter_lkup_elections` (
+  `ElectionDate` datetime DEFAULT NULL,
+  `ElectionDescraw` varchar(50) DEFAULT NULL,
+  `RecCount` int(11) DEFAULT NULL,
+  `ElecType` varchar(35) DEFAULT NULL,
+  `specelec` varchar(50) DEFAULT NULL,
+  `elecid` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`elecid`),
+  KEY `idx_elecid` (`elecid`),
+  KEY `idx_electiondate` (`ElectionDate`),
+  KEY `idx_desc` (`ElectionDescraw`)
+) ENGINE=InnoDB AUTO_INCREMENT=1561 DEFAULT CHARSET=latin1
+
+
+CREATE TABLE `VoterHistory_archive` (
+  `VoterID` varchar(15) NOT NULL,
+  `elecid` int(11) NOT NULL,
+  `VotingMethod` varchar(2) DEFAULT NULL,
+  `AN` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`AN`),
+  KEY `idx_elecid` (`elecid`)
+) ENGINE=InnoDB AUTO_INCREMENT=31125889 DEFAULT CHARSET=latin1
+
+
+CREATE TABLE `Voter_RegArchive` (
+  `VoterID` varchar(10) NOT NULL,
+  `EndDate` int(11) NOT NULL,
+  `StartDate` int(11) DEFAULT NULL,
+  `LastName` varchar(50) DEFAULT NULL,
+  `FirstName` varchar(50) DEFAULT NULL,
+  `MiddleName` varchar(50) DEFAULT NULL,
+  `NameSuffix` varchar(10) DEFAULT NULL,
+  `Address` varchar(75) DEFAULT NULL,
+  `City` varchar(50) DEFAULT NULL,
+  `State` varchar(2) DEFAULT NULL,
+  `Zip` varchar(9) DEFAULT NULL,
+  `Phone` varchar(10) DEFAULT NULL,
+  `BirthYear` varchar(4) DEFAULT NULL,
+  `RegistrationDate` datetime DEFAULT NULL,
+  `OldVoterID` varchar(10) DEFAULT NULL,
+  `DataDate` datetime DEFAULT NULL,
+  `RecordCont` char(1) DEFAULT NULL,
+  `AddrCont` char(1) DEFAULT NULL,
+  `Status` varchar(15) DEFAULT NULL,
+  `an` int(11) NOT NULL,
+  `nameck` char(1) DEFAULT NULL,
+  `adddrck` char(1) DEFAULT NULL,
+  `zipck` char(1) DEFAULT NULL,
+  `maxrecord` tinyint(4) DEFAULT NULL,
+  `regck` char(1) DEFAULT NULL,
+  PRIMARY KEY (`VoterID`,`EndDate`),
+  KEY `ixlname` (`LastName`),
+  KEY `ixfname` (`FirstName`),
+  KEY `ixaddr` (`Address`),
+  KEY `ixcity` (`City`),
+  KEY `_WA_Sys_MiddleName_02084FDA` (`MiddleName`),
+  KEY `_WA_Sys_Phone_02084FDA` (`Phone`),
+  KEY `_WA_Sys_EndDate_02084FDA` (`EndDate`),
+  KEY `_WA_Sys_StartDate_02084FDA` (`StartDate`),
+  KEY `_WA_Sys_Zip_02084FDA` (`Zip`),
+  KEY `_WA_Sys_an_02084FDA` (`an`),
+  KEY `_WA_Sys_BirthYear_02084FDA` (`BirthYear`),
+  KEY `_WA_Sys_State_02084FDA` (`State`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+
+
