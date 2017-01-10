@@ -1,0 +1,18 @@
+8.0
+15
+1       SQLCHAR       0       0      "\""                      	0     FIRSTQUOTE              SQL_Latin1_General_CP1_CI_AS
+2       SQLCHAR       0       8      "\",\""                     	1     DetentionFacilityClientNumber               SQL_Latin1_General_CP1_CI_AS
+3       SQLCHAR       1       8      "\",\""                              2     DETNEXTRDetentionID                         ""
+4       SQLCHAR       0       9      "\",\""                                3     DetentionFacilityORIIdentifier              SQL_Latin1_General_CP1_CI_AS
+5       SQLCHAR       0       100     "\",\""                                  4     DetentionFacilityORIName                    SQL_Latin1_General_CP1_CI_AS
+6       SQLCHAR       0       100    "\",\""                                 5     DetentionFacilityRegisterIdentifier         SQL_Latin1_General_CP1_CI_AS
+7       SQLCHAR       0       3       "\",\""                                  6     DetentionHoldReasonCode                     SQL_Latin1_General_CP1_CI_AS
+8       SQLCHAR       0       100     "\",\""                                  7     DetentionHoldReasonText                     SQL_Latin1_General_CP1_CI_AS
+9       SQLCHAR       1       24      "\",\""                                 8     DetentionStartDateTime                      ""
+10       SQLCHAR       1       24     "\",\""                                  9     DetentionEndDateTime                        ""
+11      SQLCHAR       0       3      "\",\""                                 10    DetentionEndReasonCode                      SQL_Latin1_General_CP1_CI_AS
+12      SQLCHAR       0       100    "\",\""                                  11    DetentionEndReasonText                      SQL_Latin1_General_CP1_CI_AS
+13      SQLCHAR       0       10     "\",\""                                  12    DetentionControllingAgencyORIIdentifier     SQL_Latin1_General_CP1_CI_AS
+14      SQLCHAR       0       100    "\",\""                                  13    DetentionControllingAgencyORIName           SQL_Latin1_General_CP1_CI_AS
+15      SQLCHAR       0       3      "\",\""                                  14    DetentionTypeCode                           SQL_Latin1_General_CP1_CI_AS
+16      SQLCHAR       0       10      "\"\n"                            15    DetentionJuvenileIndicator                  ""

@@ -1,0 +1,12 @@
+8.0
+10
+1       SQLINT        2       12      ""                        1     DETNEXTRDetentionID                            ""
+2       SQLCHAR       0       10      ""                        2     DetentionOffenseFacilityORIIdentifier          SQL_Latin1_General_CP1_CI_AS
+3       SQLCHAR       0       100     ""                        3     DetentionOffenseFacilityRegisterIdentifier     SQL_Latin1_General_CP1_CI_AS
+4       SQLINT        1       12      ""                        4     DetentionOffenseSequenceNumber                 ""
+5       SQLCHAR       0       10      ""                        5     DetentionOffenseStatuteChapterCode             SQL_Latin1_General_CP1_CI_AS
+6       SQLCHAR       0       10      ""                        6     DetentionOffenseStatuteSectionCode             SQL_Latin1_General_CP1_CI_AS
+7       SQLCHAR       0       17      ""                        7     DetentionOffenseStatuteSubdivisionCode         SQL_Latin1_General_CP1_CI_AS
+8       SQLCHAR       0       10      ""                        8     DetentionOffenseStatuteSequenceCode            SQL_Latin1_General_CP1_CI_AS
+9       SQLCHAR       0       5       ""                        9     DetentionOffenseMOCcode                        SQL_Latin1_General_CP1_CI_AS
+10      SQLCHAR       0       100     ""                        10    DetentionOffenseText                           SQL_Latin1_General_CP1_CI_AS

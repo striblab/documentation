@@ -1,0 +1,17 @@
+8.0
+15
+1       SQLCHAR       0       50      ""                       	1     DetentionFacilityClientNumber               SQL_Latin1_General_CP1_CI_AS
+2       SQLCHAR       1       12      ""                             2     DETNEXTRDetentionID                         ""
+3       SQLCHAR       0       10      ""                              3     DetentionFacilityORIIdentifier              SQL_Latin1_General_CP1_CI_AS
+4       SQLCHAR       0       100     ""                              4     DetentionFacilityORIName                    SQL_Latin1_General_CP1_CI_AS
+5       SQLCHAR       0       100     ""                              5     DetentionFacilityRegisterIdentifier         SQL_Latin1_General_CP1_CI_AS
+6       SQLCHAR       0       3       ""                               6     DetentionHoldReasonCode                     SQL_Latin1_General_CP1_CI_AS
+7       SQLCHAR       0       100     ""                              7     DetentionHoldReasonText                     SQL_Latin1_General_CP1_CI_AS
+8       SQLCHAR       1       24      ""                               8     DetentionStartDateTime                      ""
+9       SQLCHAR       1       24      ""                              9     DetentionEndDateTime                        ""
+10      SQLCHAR       0       3       ""                               10    DetentionEndReasonCode                      SQL_Latin1_General_CP1_CI_AS
+11      SQLCHAR       0       100     ""                               11    DetentionEndReasonText                      SQL_Latin1_General_CP1_CI_AS
+12      SQLCHAR       0       10      ""                               12    DetentionControllingAgencyORIIdentifier     SQL_Latin1_General_CP1_CI_AS
+13      SQLCHAR       0       100     ""                               13    DetentionControllingAgencyORIName           SQL_Latin1_General_CP1_CI_AS
+14      SQLCHAR       0       3       ""                               14    DetentionTypeCode                           SQL_Latin1_General_CP1_CI_AS
+15      SQLCHAR       0       10       "\r\n"                            15    DetentionJuvenileIndicator                  ""

@@ -1,0 +1,15 @@
+8.0
+13
+1       SQLCHAR       0       10      ""                        1     DetentionFacilityORIIdentifier        SQL_Latin1_General_CP1_CI_AS
+2       SQLCHAR       0       12      ""                        2     DetentionFacilityClientIdentifier     SQL_Latin1_General_CP1_CI_AS
+3       SQLCHAR       1       50      ""                        3     DetentionFacilityClientNumber         ""
+4       SQLCHAR       0       50      ""                        4     ClientFirstName                       SQL_Latin1_General_CP1_CI_AS
+5       SQLCHAR       0       50      ""                        5     ClientMiddleName                      SQL_Latin1_General_CP1_CI_AS
+6       SQLCHAR       0       50      ""                        6     ClientLastName                        SQL_Latin1_General_CP1_CI_AS
+7       SQLCHAR       0       10      ""                        7     ClientSuffixName                      SQL_Latin1_General_CP1_CI_AS
+8       SQLCHAR       1       24      ""                        8     ClientBirthDate                       ""
+9       SQLCHAR       0       1       ""                        9     ClientRaceCode                        SQL_Latin1_General_CP1_CI_AS
+10      SQLCHAR       0       40      ""                        10    ClientRaceText                        SQL_Latin1_General_CP1_CI_AS
+11      SQLCHAR       0       1       ""                        11    ClientGenderCode                      SQL_Latin1_General_CP1_CI_AS
+12      SQLCHAR       0       7       ""                        12    ClientGenderText                      SQL_Latin1_General_CP1_CI_AS
+13      SQLCHAR       1       1       ""                        13    ClientJuvenileIndicator               ""

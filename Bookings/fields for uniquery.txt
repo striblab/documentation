@@ -1,0 +1,50 @@
+
+fields for Uniquery 
+--need to add a uniqueID ("an"), can get rid of the calculations, need to join to DETType lookup
+
+ an, 
+LastName, 
+FirstName, 
+MidName, 
+Suffix, 
+DOB, 
+db_tools.dbo.Age(DOB, GETDATE()) AS AgeNow, 
+dbo.LDOCRace.Race, 
+GenderCode AS Gender, 
+StartDateTime, 
+EndDateTime, 
+
+CONVERT(decimal(5, 1), CONVERT(real, EndDateTime) - CONVERT(real, StartDateTime)) AS DaysHeld
+
+db_tools.dbo.Age(DOB, StartDateTime) AS AgeThen, 
+
+dbo.LDOCFacility.Facility, 
+dbo.LDOCHold.HoldReason,
+ dbo.LDOCEnd.EndReason, 
+MOCcode, 
+SequenceNbr, 
+Statute, 
+Offense, 
+AgencyName, 
+dbo.LDOCDetType.DetType, 
+
+DataRef
+
+
+
+
+
+
+SELECT        dbo.tblClient.detentionfacilityclientnumber, dbo.tblClient.ClientFirstName, dbo.tblClient.ClientMiddleName, dbo.tblClient.ClientLastName, dbo.tblClient.ClientSuffixName, 
+                         dbo.tblClient.ClientBirthDate, dbo.tblClient.clientracetext, dbo.tblClient.clientgendercode, dbo.tblDetention.DetentionStartDateTime, 
+                         dbo.tblDetention.DetentionEndDateTime, dbo.tblDetention.DetentionFacilityORIName, dbo.tblDetention.DetentionHoldReasonText, dbo.tblDetention.DetentionEndReasonText, 
+                         dbo.tblOffense.DetentionOffenseSequenceNumber, dbo.tblOffense.DetentionOffenseStatuteChapterCode, dbo.tblOffense.DetentionOffenseStatuteSectionCode, 
+                         dbo.tblOffense.DetentionOffenseStatuteSequenceCode, dbo.tblOffense.DetentionOffenseMOCcode, dbo.tblOffense.DetentionOffenseText, 
+                         dbo.tblDetention.DetentionControllingAgencyORIName, dbo.LDOCDetType.DetType, dbo.tblCourtCase.DetentionCourtCaseIdentifier, 
+                         dbo.tblCourtCase.DetentionCourtCaseSentenceStartDate
+FROM            dbo.tblDetention INNER JOIN
+                         dbo.tblClient ON dbo.tblDetention.detentionfacilityclientnumber = dbo.tblClient.detentionfacilityclientnumber INNER JOIN
+                         dbo.tblOffense ON dbo.tblDetention.DETNextRDetentionID = dbo.tblOffense.DETNextRDetentionID LEFT OUTER JOIN
+                         dbo.tblCourtCase ON dbo.tblOffense.DETNextRDetentionID = dbo.tblCourtCase.DETNextRDetentionID LEFT OUTER JOIN
+                         dbo.LDOCDetType ON dbo.tblDetention.DetentionTypeCode = dbo.LDOCDetType.DetTypeCode
+WHERE        (dbo.tblClient.ClientLastName IS NOT NULL)
