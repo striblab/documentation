@@ -1,0 +1,319 @@
+MAUDE data:
+server location:  --amazon1/healthcare
+
+We used this data for a project by Jim Spencer and Joe Carlson about Medtronic's Infuse product. We had two purposes for using this data -- the first was to find a report that summarized hundreds of adverse events (the fact that Medtronic "hid" these events and the FDA essentially let them was the focus of the story); the second part was to count the number of reported adverse events each year both before and after that summarized report.
+
+Downloaded the raw data here: http://www.fda.gov/MedicalDevices/DeviceRegulationandGuidance/PostmarketRequirements/ReportingAdverseEvents/ucm127891.htm
+
+This data is pretty tough to work with; the FDA doesn't seem to have much rigor in place to encourage standardization. Even the company names are inconsistent, which is surprising since the companies are generally the ones who file these reports (but not the only ones)
+
+TABLES:
+-foidev -- device table from 2001 to 2015 (as of Dec 31); one record for each device reported with an adverse event in mdrfoi table
+-foitext -- narrative fields table 2001 to 2015 (as of Aug 24); multiple records that go with each adverse event report; each record represents a different "text" section of the report;  I didn't update this table because we didn't really need it for the Infuse project
+-mdrfoi -- one record for each adverse event report; main report table for reports from 2001 to 2015 (as of Dec 31; there are some reports that were recieved in Jan 2016)
+--infuse_names-- this was pulled from the foidev table for all records that had some variation of Infuse or its generic name in the brand name and generic name fields. I used this to identify which records (with %medtronic% as the manufacturer name) belonged in our Infuse sub-set. 
+--Infusefinal_tbl -- this is one record for each report that included one or more Infuse devices; it doesn't contain all the fields of information, but the key ones we needed such as the report number (used for online lookup) and the dates that we were comparing (date_received and the manufacturer_date_received); this was created from a saved view by the same name
+--InfuseTxt_tbl -- these are the narrative records that match the mdr_report_key numbers in the Infusefinal_tbl. There are typically more than one narrative record for each report (hence the reason to keep it separate)
+
+
+
+
+Infuse shows up in the brand name and generic name fields in the "foidev" table in many variations. I pulled out all the brand and generic names that had "%medtronic%" in the manufacturer name field and went through them in Excel, flagging the ones that matched Infuse or the generic names for Infuse. Then I pulled that list into SQL Server and created a table called "infuse_names."
+
+The foidev table can have more than one record per report if more than one device is involved. So to accurately pull out the reports that involve Infuse, I matched that "infuse_names" table back to the FOIDEV table and saved that as "Infuse Device Reports" query. Then did a group by on the mdr_report_key field in the new query and added a count field to identify the number of devices and saved that as "InfuseReportKeys". This is essentially a list of all the MDR report numbers that involve one or more Infuse devices. 
+
+Then I matched the "InfuseReportKeys" query to the mdrfoi table to get the report numbers and crucial dates. This is saved as "infusefinal_tbl". InfuseTxt_tbl is the result of matching the infusefinal_tbl to the foitext table. 
+
+
+
+Data cleanup notes:
+
+The MDRfoi table is supposed to have one record for each report, but it appears that there are sometimes two records that are mostly identical except that in one record a field has a NULL value and in that same field in the other record that value ="". So I ran update queries on all the fields to convert any "" values to NULL values and there were some date problems and inconsistent names in the manufacturer names and address fields.
+
+
+update mdrfoinew set event_key=null where event_key=''
+update mdrfoinew set report_number=null where report_number=''
+update mdrfoinew set report_source_code=null where report_source_code=''
+update mdrfoinew set manufacturer_link_flag_=null where manufacturer_link_flag_=''
+update mdrfoinew set number_devices_in_event=null where number_devices_in_event=''
+update mdrfoinew set number_patients_in_event=null where number_patients_in_event=''
+update mdrfoinew set adverse_event_flag=null where adverse_event_flag=''
+update mdrfoinew set product_problem_flag=null where product_problem_flag=''
+update mdrfoinew set date_of_event=null where date_of_event=''
+update mdrfoinew set reprocessed_and_reused_flag=null where reprocessed_and_reused_flag=''
+update mdrfoinew set reporter_occupation_code=null where reporter_occupation_code=''
+update mdrfoinew set health_professional=null where health_professional=''
+update mdrfoinew set initial_report_to_fda=null where initial_report_to_fda=''
+update mdrfoinew set date_facility_aware=null where date_facility_aware=''
+update mdrfoinew set report_date=null where report_date=''
+update mdrfoinew set report_to_fda=null where report_to_fda=''
+update mdrfoinew set date_report_to_fda=null where date_report_to_fda=''
+update mdrfoinew set event_location=null where event_location=''
+update mdrfoinew set date_report_to_manufacturer=null where date_report_to_manufacturer=''
+update mdrfoinew set manufacturer_contact_t_name=null where manufacturer_contact_t_name=''
+update mdrfoinew set manufacturer_contact_f_name=null where manufacturer_contact_f_name=''
+update mdrfoinew set manufacturer_contact_l_name=null where manufacturer_contact_l_name=''
+update mdrfoinew set manufacturer_contact_street_1=null where manufacturer_contact_street_1=''
+update mdrfoinew set manufacturer_contact_street_2=null where manufacturer_contact_street_2=''
+update mdrfoinew set manufacturer_contact_city=null where manufacturer_contact_city=''
+update mdrfoinew set manufacturer_contact_state=null where manufacturer_contact_state=''
+update mdrfoinew set manufacturer_contact_zip_code=null where manufacturer_contact_zip_code=''
+update mdrfoinew set manufacturer_contact_zip_Ext=null where manufacturer_contact_zip_ext=''
+update mdrfoinew set manufacturer_contact_country=null where manufacturer_contact_country=''
+update mdrfoinew set manufacturer_contact_postal=null where manufacturer_contact_postal=''
+update mdrfoinew set manufacturer_contact_area_code=null where manufacturer_contact_area_code=''
+update mdrfoinew set manufacturer_contact_exchange=null where manufacturer_contact_exchange=''
+update mdrfoinew set manufacturer_contact_phone_no=null where manufacturer_contact_phone_no=''
+update mdrfoinew set manufacturer_contact_extension=null where manufacturer_contact_extension=''
+update mdrfoinew set manufacturer_contact_pcountry=null where manufacturer_contact_pcountry=''
+update mdrfoinew set manufacturer_contact_pcity=null where manufacturer_contact_pcity=''
+update mdrfoinew set manufacturer_contact_plocal=null where manufacturer_contact_plocal=''
+update mdrfoinew set manufacturer_g1_name=null where manufacturer_g1_name=''
+update mdrfoinew set manufacturer_g1_street_1=null where manufacturer_g1_street_1=''
+update mdrfoinew set manufacturer_g1_street_2=null where manufacturer_g1_street_2=''
+update mdrfoinew set manufacturer_g1_city=null where manufacturer_g1_city=''
+update mdrfoinew set manufacturer_g1_state_code=null where manufacturer_g1_state_code=''
+update mdrfoinew set manufacturer_g1_zip_code=null where manufacturer_g1_zip_code=''
+update mdrfoinew set manufacturer_g1_zip_code_Ext=null where manufacturer_g1_zip_code_ext=''
+update mdrfoinew set manufacturer_g1_country_code=null where manufacturer_g1_country_code=''
+update mdrfoinew set manufacturer_g1_postal_code=null where manufacturer_g1_postal_code=''
+update mdrfoinew set date_manufacturer_received=null where date_manufacturer_received=''
+update mdrfoinew set device_date_of_manufacture=null where device_date_of_manufacture=''
+update mdrfoinew set single_use_flag=null where single_use_flag=''
+update mdrfoinew set remedial_action=null where remedial_action=''
+update mdrfoinew set previous_use_code=null where previous_use_code=''
+update mdrfoinew set removal_correction_number=null where removal_correction_number=''
+update mdrfoinew set event_type=null where event_type=''
+update mdrfoinew set distributor_name=null where distributor_name=''
+update mdrfoinew set distributor_address_1=null where distributor_address_1=''
+update mdrfoinew set distributor_address_2=null where distributor_address_2=''
+update mdrfoinew set distributor_city=null where distributor_city=''
+update mdrfoinew set distributor_state_code=null where distributor_state_code=''
+update mdrfoinew set distributor_zip_code=null where distributor_zip_code=''
+update mdrfoinew set distributor_zip_code_ext=null where distributor_zip_code_ext=''
+update mdrfoinew set report_to_manufacturer=null where report_to_manufacturer=''
+update mdrfoinew set manufacturer_name=null where manufacturer_name=''
+update mdrfoinew set manufacturer_address_1=null where manufacturer_address_1=''
+update mdrfoinew set manufacturer_address_2=null where manufacturer_address_2=''
+update mdrfoinew set manufacturer_city=null where manufacturer_city=''
+update mdrfoinew set manufacturer_state_code=null where manufacturer_state_code=''
+update mdrfoinew set manufacturer_zip_code=null where manufacturer_zip_code=''
+update mdrfoinew set manufacturer_zip_code_ext=null where manufacturer_zip_code_ext=''
+update mdrfoinew set manufacturer_country_code=null where manufacturer_country_code=''
+update mdrfoinew set manufacturer_postal_code=null where manufacturer_postal_code=''
+update mdrfoinew set type_of_report=null where type_of_report=''
+update mdrfoinew set source_type=null where source_type=''
+
+
+update mdrfoinew 
+set date_report=NULL where year(date_report)=1899
+
+update mdrfoinew set date_manufacturer_received=NULL where year(date_manufacturer_received)=1899
+
+update mdrfoinew set manufacturer_g1_name='DEPUY IRELAND REG# 9616671' WHERE MDR_REPORT_KEY='1005132' OR MDR_REPORT_KEY='1005133'
+
+UPDATE mdrfoinew SET MANUFACTURER_G1_NAME='DEPUY INTL. LTD REG# 8010379' WHERE MDR_REPORT_KEY='1213943'
+
+UPDATE mdrfoinew SET MANUFACTURER_G1_NAME='WILLY RUESCH GMBH' , MANUFACTURER_G1_STREET_1='WILLY-R-SCH-STR' WHERE MDR_REPORT_KEY='1328428' OR MDR_REPORT_KEY='1328435' OR MDR_REPORT_KEY='1328429' OR MDR_REPORT_KEY='1328436' OR MDR_REPORT_KEY='1328434'
+
+UPDATE mdrfoinew SET MANUFACTURER_G1_STREET_2='TORREJON DE ARDOZ' WHERE MDR_REPORT_KEY='1484401'
+
+
+THIS LAST QUERY GETS RID OF THE DUPLICATES (BY USING DISTINCT) AND THEN ALSO CONVERTS SEVERAL TEXT-FORMATED DATE FIELDS INTO TRUE DATES FIELDS:
+
+select distinct *, cast(date_of_event as datetime) as Date_of_eventDT, cast(date_facility_aware as datetime) as date_facility_awareDT,
+cast(report_date as datetime) as report_dateDT, cast(date_report_to_FDA as datetime) as date_report_to_FDAdt,
+cast(date_report_to_manufacturer as datetime) as date_report_to_manufacturerDT 
+into mdrfoi2
+from mdrfoiNEW
+
+
+
+
+create spreadsheet for Joe and Jim (one query for older years; one query for 2015):
+
+select b.mdr_report_key as InfuseKey, a.mdr_report_key, a.report_number, a.report_source_code, a.number_devices_in_event, a.number_patients_in_event,
+a.date_received, a.adverse_event_flag, a.product_problem_flag, a.date_report, a.date_of_event, a.reporter_occupation_code,
+a.health_professional, a.initial_report_to_fda, a.date_facility_aware, a.report_date, a.date_report_to_fda, a.event_location,
+a.date_report_to_manufacturer, a.date_manufacturer_received, a.remedial_action, a.event_type, a.manufacturer_name,
+a.type_of_report, a.source_type, c.text_type_code, c.patient_sequence_number, c.foi_text
+from mdrfoi_2015 a right join foidev15_infuse b on a.mdr_report_key=b.mdr_report_key left join foitext2015 c on b.mdr_report_key=c.mdr_report_key
+
+
+
+select b.mdr_report_key as InfuseKey, a.mdr_report_key, a.report_number, a.report_source_code, a.number_devices_in_event, a.number_patients_in_event,
+a.date_received, a.adverse_event_flag, a.product_problem_flag, a.date_report, a.date_of_eventDT, a.reporter_occupation_code,
+a.health_professional, a.initial_report_to_fda, a.date_facility_aware, a.report_date, a.date_report_to_fda, a.event_location,
+a.date_report_to_manufacturer, a.date_manufacturer_received, a.remedial_action, a.event_type, a.manufacturer_name,
+a.type_of_report, a.source_type, c.texttype,  c.patientseq, c.text
+from mdrfoi a right join infusereportkeys b on a.mdr_report_key=b.mdr_report_key left join infusetxt_tbl c on 
+b.mdr_report_key=c.mdr_report_key
+
+
+
+----------------------------------------------------------------------
+Repeat analysis Feb 2016
+Downloaded all new data for MDRFOI (new table is called mdrfoi_new)
+Downloaded 2009 to 2015 for foidev table and then merged earlier years out of data we already had (record counts were the same) 
+
+Matched the foidev table against Infuse_brand_names and Infuse_generic_names and hunted down all instances I could find of the Infuse product. Note: there are a lot of records with incomplete information here (i.e. "unknown" for the names or even just blanks)
+
+I ended up finding about 50 records that I didn't find previously, mostly due to Medtronic being spelled wrong. In my previous analysis, I don't think I accounted for that.
+
+
+
+insert into foidev_new
+select * from foidev where strib_yr='2001' or strib_yr='2002' or strib_yr='2003'
+or strib_yr='2004' or strib_yr='2005' or strib_yr='2006' or strib_yr='2007' or strib_yr='2008'
+
+
+select mdr_report_key, device_sequence_no, count(*)
+from foidev_new
+group by mdr_report_key, device_sequence_no
+order by 3 desc
+
+select *
+from foidev_new
+where mdr_report_key='3359255'
+
+select BRANDNAME INTO INFUSE_BRAND_NAMES
+from infuse_names
+WHERE BRANDNAME <>'' AND BRANDNAME NOT LIKE 'UNKNOWN%'
+GROUP BY BRANDNAME
+
+SELECT GENERICNAME INTO INFUSE_GENERIC_NAMES
+FROM INFUSE_NAMES
+WHERE GENERICNAME<>'' AND GENERICNAME<>'NONE' AND GENERICNAME<>'*'
+GROUP BY GENERICNAME
+
+UPDATE FOIDEV_NEW SET INFUSEFLAG=NULL
+
+update foidev_new set Infuseflag='yes' 
+from foidev_new, INFUSE_BRAND_NAMES
+where RTRIM(foidev_new.brand_NAME)=RTRIM(INFUSE_BRAND_NAMES.BRANDNAME)
+AND MANUFACTURER_D_NAME LIKE '%MEDTRONIC%'
+
+UPDATE FOIDEV_NEW SET INFUSEFLAG='YES'
+FROM FOIDEV_NEW, INFUSE_GENERIC_NAMES
+WHERE INFUSEFLAG IS NULL AND RTRIM(FOIDEV_NEW.GENERIC_NAME)=RTRIM(INFUSE_GENERIC_NAMES.GENERICNAME)
+AND MANUFACTURER_D_NAME LIKE '%MEDTRONIC%'
+
+SELECT BRAND_NAME, GENERIC_NAME, COUNT(*)
+FROM FOIDEV_NEW
+WHERE INFUSEFLAG='YES'
+GROUP BY BRAND_NAME, GENERIC_NAME
+ORDER BY 1
+
+SELECT *
+FROM INFUSE_BRAND_NAMES
+ORDER BY 1
+
+DELETE FROM INFUSE_BRAND_NAMES WHERE BRANDNAME='MEDTRONIC'
+
+
+SELECT brand_name, generic_name, manufacturer_d_name, count(*)
+FROM FOIDEV_NEW
+WHERE MANUFACTURER_D_NAME LIKE '%SOFAMOR%' AND INFUSEFLAG IS NULL
+group by brand_name, generic_name, manufacturer_d_name
+
+UPDATE FOIDEV_NEW SET INFUSEFLAG='YES' WHERE (GENERIC_NAME='medtornic infuse' or generic_name='medtronic infuse' or generic_name='infuse')
+and infuseflag is null
+
+update foidev_new set infuseflag='yes' where (brand_name='INFUSE BONE GRAFT' or brand_name='INFUSE BONE GRAFT/LT-CAGE DEVICE' OR
+BRAND_NAME='INFUSE SPINAL GRAFT CAGE' OR BRAND_NAME='MEDTRONIC INFUSE') and infuseflag is null
+
+UPDATE FOIDEV_NEW SET INFUSEFLAG='YES' WHERE BRAND_NAME='INFUSE GRAFT' AND MANUFACTURER_D_NAME LIKE 'MEDTRONIC%'
+AND INFUSEFLAG IS NULL
+
+UPDATE FOIDEV_NEW SET INFUSEFLAG='YES' WHERE INFUSEFLAG IS NULL AND GENERIC_NAME LIKE 'INTERVERTEBRAL FUSION DEVICE%'
+AND MANUFACTURER_D_NAME LIKE '%SOFAMOR%'
+
+UPDATE FOIDEV_NEW SET INFUSEFLAG='YES' WHERE BRAND_NAME='MEDTRONIC' AND GENERIC_NAME='INFUSE BONE GRAFT' AND INFUSEFLAG IS NULL
+
+
+UPDATE FOIDEV_NEW SET INFUSEFLAG=NULL WHERE (BRAND_NAME LIKE 'PEEK PREVAIL%' OR BRAND_NAME LIKE 'PYRAMESH%')
+ AND INFUSEFLAG='YES'
+ 
+ UPDATE FOIDEV_NEW SET INFUSEFLAG=NULL WHERE INFUSEFLAG='YES' AND
+ (BRAND_NAME LIKE 'CAPSTONE%' OR BRAND_NAME LIKE 'INDUCTOS%')
+ 
+  UPDATE FOIDEV_NEW SET INFUSEFLAG=NULL WHERE INFUSEFLAG='YES' AND
+  GENERIC_NAME='INFUSION'
+  
+  UPDATE FOIDEV_NEW SET INFUSEFLAG=NULL WHERE INFUSEFLAG='YES' AND BRAND_NAME='UNKNOWN IMPLANT' AND GENERIC_NAME='CAGE'
+  
+  
+  SELECT MDR_REPORT_KEY, COUNT(*)
+  FROM FOIDEV_NEW
+  WHERE INFUSEFLAG='YES'
+  GROUP BY MDR_REPORT_KEY
+  ORDER BY 2 DESC
+  
+SELECT MDR_REPORT_KEY, COUNT(*)
+FROM MDRFOI_NEW
+GROUP BY MDR_REPORT_KEY
+ORDER BY 2 DESC
+
+update mdrfoi_new set infuse='yes' 
+from mdrfoi_new, foidev_new
+where mdrfoi_new.mdr_report_key=foidev_new.mdr_report_key and foidev_new.infuseflag='yes'
+
+select year(date_received), count(*)
+from mdrfoi_new
+where infuse='yes'
+group by year(date_received)
+order by 1
+
+select *
+from mdrfoi_new 
+where year(date_received)=1899
+and infuse='yes'
+
+** there are 5 records that have 2008 in the report number, which indicates that they were recieved in 2008; but you'll see that the "date report" field says December 2007
+--I updated those 5 records to 1-1-2008 for date received
+
+
+
+select *
+from infusefinal_tbl
+where mdr_report_key not in
+(select mdr_report_key from mdrfoi_new where infuse='yes')
+
+select *
+from foidev_new
+where mdr_report_key='3077310' or mdr_report_key='3916065'
+
+select *
+from mdrfoi_new
+where mdr_report_key='3650045'
+
+select *
+from mdrfoi_new
+where year(date_received)<2004 and infuse='yes'
+order by date_received
+
+select *
+from foidev_new
+where mdr_report_key='328516'
+
+select manufacturer_d_name, count(*)
+from foidev_new
+where infuseflag='yes'
+group by manufacturer_d_name
+order by 1
+
+update foidev_new set infuseflag=null where infuseflag='yes' and (manufacturer_d_name='STRYKER' OR MANUFACTURER_D_NAME LIKE 'WARSAW%')
+
+SELECT BRAND_NAME, GENERIC_NAME, COUNT(*)
+FROM FOIDEV_NEW 
+WHERE INFUSEFLAG='YES'
+AND (MANUFACTURER_D_NAME LIKE 'SOFAMOR%')
+GROUP BY BRAND_NAME, GENERIC_NAME
+
+UPDATE MDRFOI_NEW SET INFUSE=NULL
+
+update mdrfoi_new set infuse='yes' 
+from mdrfoi_new, foidev_new
+where mdrfoi_new.mdr_report_key=foidev_new.mdr_report_key and foidev_new.infuseflag='yes'
+
+
