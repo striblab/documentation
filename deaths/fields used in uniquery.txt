@@ -1,0 +1,35 @@
+DMain.LastName, DMain.FirstName, DMain.MiddleName, DMain.Suffix,  DMain.BirthDate, DMain.DeathDate, DMain.DeathCounty,DMain.BirthCity, DMain.BirthState,  DMain.MotherMaiden, 
+
+
+
+LDCert.Gender, LDCert.SSN, 
+                      LDCert.AgeYears, LDCert.Race, LDCert.HispanicEthnicity, LDCert.YearsEducation, 
+                      LDCert.Occupation, LDCert.Industry, LDCert.ArmedForces, LDCert.ResAddress, LDCert.ResCity, LDCert.ResState, LDCert.ResCounty, 
+                      LDCert.Zip, LDCert.ResCountry, LDCert.MannerDeath, 
+LDCert.PlaceType, LDCert.PlaceOther, 
+                      LDCert.SiteHospital, LDCert.Facility, LDCert.FaciltyOther, LDCert.NursHomeName, LDCert.DeathAddress, LDCert.DeathCity,  LDCert.DeathState, LDCert.DeathCountry, 
+                     LDCert.FatherLast, LDCert.FatherFirst, 
+                      LDCert.FatherMiddle,
+LDCert.MotherFirst, LDCert.MotherMiddle, LDCert.MaritalStatus, LDCert.SpouseLast, 
+                      LDCert.SpouseFirst, LDCert.SpouseMiddle, LDCert.InfrmtLast, LDCert.InfrmtFirst, LDCert.InfrmtMid, LDCert.InfrmtRelationship, 
+                      LDCert.InformantAddr, LDCert.InformantCity, LDCert.InfrmtState, LDCert.Burial, LDCert.Cremation, LDCert.Donation, LDCert.Entombed, 
+                      LDCert.OthrDisposition, LDCert.DispositionText, LDCert.DispositionDate, LDCert.Cemetery, LDCert.CemCity, LDCert.CemState, 
+                      LDCert.Crematorium, LDCert.FHName, LDCert.CertLast, LDCert.CertFirst, LDCert.CertMiddle, LDCert.CerTitle, DMain.DeathYear, 
+
+
+
+
+LCause.CauseA, LCause.IntervalA, LCause.CauseB, LCause.IntervalB, LCause.CauseC, 
+                      LCause.IntervalC, LCause.CauseD, LCause.IntervalD, LCause.CauseOther, 
+
+
+LICD_v2.icd_desc AS ICDCause, 
+                     
+
+ LInjury.InjuryDesc, LInjury.InjuryPlace, LInjury.InjuryDate, LInjury.InjuryTime, LInjury.InjuryAddress, LInjury.InjuryCity, 
+                      LInjury.InjuryCounty, LInjury.InjuryState, LInjury.InjuryZip, LInjury.InjuryWork, 
+
+
+
+
+                      LSource.Source
