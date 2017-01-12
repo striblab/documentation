@@ -1,0 +1,124 @@
+
+
+##This is the script for importing voter HISTORY data from the Minnesota Secretary of State
+##It goes into the newsroomdata database on amazon1; table is called "VoterHistory_Current"
+
+
+##STEP 1:
+##move the existing data out of VoterHistory_current by export a text file 
+
+
+##THEN RUN REMAINDER OF SCRIPT
+delete from VoterHistory_current;
+
+## run imports -- 
+##import 1st file
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\voters\\election01.txt' into table VoterHistory_current fields terminated by ',' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+(@VoterID,
+@ElectionDate,
+@ElectionDescription,
+@VotingMethod)
+SET
+VoterID=@VoterID,
+ElectionDate=STR_TO_DATE(@ElectionDate,'%m/%d/%Y'),
+ElectionDescription=@ElectionDescription,
+VotingMethod=@VotingMethod,
+stribImportDate=NOW();
+
+
+## import 2nd file
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\voters\\election02.txt' into table VoterHistory_current fields terminated by ',' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+(@VoterID,
+@ElectionDate,
+@ElectionDescription,
+@VotingMethod)
+SET
+VoterID=@VoterID,
+ElectionDate=STR_TO_DATE(@ElectionDate,'%m/%d/%Y'),
+ElectionDescription=@ElectionDescription,
+VotingMethod=@VotingMethod,
+stribImportDate=NOW();
+
+
+## import 3rd file
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\voters\\election03.txt' into table VoterHistory_current fields terminated by ',' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+(@VoterID,
+@ElectionDate,
+@ElectionDescription,
+@VotingMethod)
+SET
+VoterID=@VoterID,
+ElectionDate=STR_TO_DATE(@ElectionDate,'%m/%d/%Y'),
+ElectionDescription=@ElectionDescription,
+VotingMethod=@VotingMethod,
+stribImportDate=NOW();
+
+
+## import 4th file
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\voters\\election04.txt' into table VoterHistory_current fields terminated by ',' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+(@VoterID,
+@ElectionDate,
+@ElectionDescription,
+@VotingMethod)
+SET
+VoterID=@VoterID,
+ElectionDate=STR_TO_DATE(@ElectionDate,'%m/%d/%Y'),
+ElectionDescription=@ElectionDescription,
+VotingMethod=@VotingMethod,
+stribImportDate=NOW();
+
+## import 5th file
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\voters\\election05.txt' into table VoterHistory_current fields terminated by ',' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+(@VoterID,
+@ElectionDate,
+@ElectionDescription,
+@VotingMethod)
+SET
+VoterID=@VoterID,
+ElectionDate=STR_TO_DATE(@ElectionDate,'%m/%d/%Y'),
+ElectionDescription=@ElectionDescription,
+VotingMethod=@VotingMethod,
+stribImportDate=NOW();
+
+
+## import 6th file
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\voters\\election06.txt' into table VoterHistory_current fields terminated by ',' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+(@VoterID,
+@ElectionDate,
+@ElectionDescription,
+@VotingMethod)
+SET
+VoterID=@VoterID,
+ElectionDate=STR_TO_DATE(@ElectionDate,'%m/%d/%Y'),
+ElectionDescription=@ElectionDescription,
+VotingMethod=@VotingMethod,
+stribImportDate=NOW();
+
+## import 7th file
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\voters\\election07.txt' into table VoterHistory_current fields terminated by ',' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+(@VoterID,
+@ElectionDate,
+@ElectionDescription,
+@VotingMethod)
+SET
+VoterID=@VoterID,
+ElectionDate=STR_TO_DATE(@ElectionDate,'%m/%d/%Y'),
+ElectionDescription=@ElectionDescription,
+VotingMethod=@VotingMethod,
+stribImportDate=NOW();
+
+
+## import 8th file
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\voters\\election08.txt' into table VoterHistory_current fields terminated by ',' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+(@VoterID,
+@ElectionDate,
+@ElectionDescription,
+@VotingMethod)
+SET
+VoterID=@VoterID,
+ElectionDate=STR_TO_DATE(@ElectionDate,'%m/%d/%Y'),
+ElectionDescription=@ElectionDescription,
+VotingMethod=@VotingMethod,
+stribImportDate=NOW();
+
+
