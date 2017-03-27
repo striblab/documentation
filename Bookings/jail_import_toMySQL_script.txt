@@ -1,0 +1,365 @@
+
+
+CREATE TABLE temp_detention 
+(
+	DetentionFacilityClientNumber varchar(50),
+	DETNEXTRDetentionID varchar(15),
+	DetentionFacilityORIIdentifier varchar(10),
+	DetentionFacilityORIName varchar(100),
+	DetentionFacilityRegisterIdentifier varchar(100),
+	DetentionHoldReasonCode varchar(3),
+	DetentionHoldReasonText varchar(100),
+	DetentionStartDateTime datetime,
+	DetentionEndDateTime datetime,
+	DetentionEndReasonCode varchar(3),
+	DetentionEndReasonText varchar(100),
+	DetentionControllingAgencyORIIdentifier varchar(10),
+	DetentionControllingAgencyORIName varchar(100),
+	DetentionTypeCode varchar(3),
+	DetentionJuvenileIndicator varchar(10),
+	stribimportdate datetime
+	)
+	;
+	
+	
+CREATE TABLE temp_charge (
+	DETNEXTRDetentionID VARCHAR(12),
+	DetentionOffenseFacilityORIIdentifier VARCHAR(10),
+	DetentionOffenseFacilityRegisterIdentifier VARCHAR(100),
+	DetentionOffenseSequenceNumber VARCHAR(12),
+	DetentionOffenseStatuteChapterCode VARCHAR(10),
+	DetentionOffenseStatuteSectionCode VARCHAR(10),
+	DetentionOffenseStatuteSubdivisionCode VARCHAR(17),
+	DetentionOffenseStatuteSequenceCode VARCHAR(10),
+	DetentionOffenseMOCcode VARCHAR(5),
+	DetentionOffenseText VARCHAR(150),
+stribimportdate datetime
+	);
+
+
+
+CREATE TABLE temp_CourtCase (
+	DETNEXTRDetentionID VARCHAR(12),
+	DetentionOffenseFacilityORIIdentifier VARCHAR(10),
+	DetentionOffenseFacilityRegisterIdentifier VARCHAR(100),
+	DetentionCourtCaseIdentifier VARCHAR(100),
+	DetentionCourtCaseSentenceStartDate datetime,
+stribimportdate datetime
+	);
+
+CREATE TABLE temp_Offense (
+	DETNEXTRDetentionID VARCHAR(12),
+	DetentionOffenseFacilityORIIdentifier VARCHAR(10),
+	DetentionOffenseFacilityRegisterIdentifier VARCHAR(100),
+	DetentionCourtCaseIdentifier VARCHAR(100),
+	DetentionOffenseSequenceNumber VARCHAR(12),
+	DetentionOffenseStatuteChapterCode VARCHAR(10),
+	DetentionOffenseStatuteSectionCode VARCHAR(10),
+	DetentionOffenseStatuteSubdivisionCode VARCHAR(17),
+	DetentionOffenseStatuteSequenceCode VARCHAR(10),
+	DetentionOffenseMOCcode VARCHAR(5),
+	DetentionOffenseText VARCHAR(150),
+stribimportdate datetime
+	);
+
+
+	 CREATE TABLE temp_Client (
+	DetentionFacilityORIIdentifier VARCHAR(10),
+	DetentionFacilityClientIdentifier VARCHAR(20),
+	DetentionFacilityClientNumber VARCHAR(50),
+	ClientFirstName VARCHAR(50),
+	ClientMiddleName VARCHAR(50),
+	ClientLastName VARCHAR(50),
+	ClientSuffixName VARCHAR(10),
+	ClientBirthDate datetime,
+	ClientRaceCode VARCHAR(1),
+	ClientRaceText VARCHAR(40),
+	ClientGenderCode VARCHAR(1),
+	ClientGenderText VARCHAR(7),
+	ClientJuvenileIndicator VARCHAR(10),
+stribimportdate datetime
+	);
+
+#########################################################
+
+#empty out the tables that are used to pull in new data; if the tables already exist
+delete from temp_detention;
+delete from temp_Client;
+delete from temp_charge;
+delete from temp_CourtCase;
+delete from temp_Offense;
+
+
+#load text files into the temp tables
+
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\Bookings\\DetentionExtractDetention.txt' into table temp_detention fields terminated by ',' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+	(	@DetentionFacilityClientNumber,
+	@DETNEXTRDetentionID,
+	@DetentionFacilityORIIdentifier,
+	@DetentionFacilityORIName,
+	@DetentionFacilityRegisterIdentifier,
+	@DetentionHoldReasonCode,
+	@DetentionHoldReasonText,
+	@DetentionStartDateTime,
+	@DetentionEndDateTime,
+	@DetentionEndReasonCode,
+	@DetentionEndReasonText,
+	@DetentionControllingAgencyORIIdentifier,
+	@DetentionControllingAgencyORIName,
+	@DetentionTypeCode,
+	@DetentionJuvenileIndicator)
+	SET
+	DetentionFacilityClientNumber=@DetentionFacilityClientNumber,
+	DETNEXTRDetentionID=@DETNEXTRDetentionID,
+	DetentionFacilityORIIdentifier=@DetentionFacilityORIIdentifier,
+	DetentionFacilityORIName=@DetentionFacilityORIName,
+	DetentionFacilityRegisterIdentifier=@DetentionFacilityRegisterIdentifier,
+	DetentionHoldReasonCode=@DetentionHoldReasonCode,
+	DetentionHoldReasonText=@DetentionHoldReasonText,
+	DetentionStartDateTime=STR_TO_DATE(@DetentionStartDateTime,'%Y-%m-%d %T') ,
+	DetentionEndDateTime=STR_TO_DATE(@DetentionEndDateTime,'%Y-%m-%d %T'),
+	DetentionEndReasonCode=@DetentionEndReasonCode,
+	DetentionEndReasonText=@DetentionEndReasonText,
+	DetentionControllingAgencyORIIdentifier=@DetentionControllingAgencyORIIdentifier,
+	DetentionControllingAgencyORIName=@DetentionControllingAgencyORIName,
+	DetentionTypeCode=@DetentionTypeCode,
+	DetentionJuvenileIndicator=@DetentionJuvenileIndicator,
+	stribimportdate=NOW();
+	
+
+
+
+
+
+
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\Bookings\\DetentionExtractDetentionCharge.txt' into table temp_charge fields terminated by ',' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+	(	@DETNEXTRDetentionID,
+	@DetentionOffenseFacilityORIIdentifier,
+	@DetentionOffenseFacilityRegisterIdentifier,
+	@DetentionOffenseSequenceNumber,
+	@DetentionOffenseStatuteChapterCode,
+	@DetentionOffenseStatuteSectionCode,
+	@DetentionOffenseStatuteSubdivisionCode,
+	@DetentionOffenseStatuteSequenceCode,
+	@DetentionOffenseMOCcode,
+	@DetentionOffenseText)
+SET
+	DETNEXTRDetentionID=@DETNEXTRDetentionID,
+	DetentionOffenseFacilityORIIdentifier=@DetentionOffenseFacilityORIIdentifier,
+	DetentionOffenseFacilityRegisterIdentifier=@DetentionOffenseFacilityRegisterIdentifier,
+	DetentionOffenseSequenceNumber=@DetentionOffenseSequenceNumber,
+	DetentionOffenseStatuteChapterCode=@DetentionOffenseStatuteChapterCode,
+	DetentionOffenseStatuteSectionCode=@DetentionOffenseStatuteSectionCode,
+	DetentionOffenseStatuteSubdivisionCode=@DetentionOffenseStatuteSubdivisionCode,
+	DetentionOffenseStatuteSequenceCode=@DetentionOffenseStatuteSequenceCode,
+	DetentionOffenseMOCcode=@DetentionOffenseMOCcode,
+	DetentionOffenseText=@DetentionOffenseText,
+  stribimportdate=NOW();
+
+
+
+
+
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\Bookings\\DetentionExtractDetentionCourtCase.txt' into table temp_CourtCase fields terminated by ',' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+	(	@DETNEXTRDetentionID ,
+	@DetentionOffenseFacilityORIIdentifier,
+	@DetentionOffenseFacilityRegisterIdentifier,
+	@DetentionCourtCaseIdentifier,
+	@DetentionCourtCaseSentenceStartDate )
+SET
+	DETNEXTRDetentionID =@DETNEXTRDetentionID,
+	DetentionOffenseFacilityORIIdentifier=@DetentionOffenseFacilityORIIdentifier,
+	DetentionOffenseFacilityRegisterIdentifier=@DetentionOffenseFacilityRegisterIdentifier,
+	DetentionCourtCaseIdentifier=@DetentionCourtCaseIdentifier,
+	DetentionCourtCaseSentenceStartDate =STR_TO_DATE(@DetentionCourtCaseSentenceStartDate,'%Y-%m-%d %T'),
+stribimportdate =NOW();
+
+
+
+
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\Bookings\\DetentionExtractDetentionOffense.txt' into table temp_Offense fields terminated by ',' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+(	@DETNEXTRDetentionID ,
+	@DetentionOffenseFacilityORIIdentifier ,
+	@DetentionOffenseFacilityRegisterIdentifier ,
+	@DetentionCourtCaseIdentifier ,
+	@DetentionOffenseSequenceNumber ,
+	@DetentionOffenseStatuteChapterCode,
+	@DetentionOffenseStatuteSectionCode ,
+	@DetentionOffenseStatuteSubdivisionCode ,
+	@DetentionOffenseStatuteSequenceCode ,
+	@DetentionOffenseMOCcode ,
+	@DetentionOffenseText )
+SET
+	DETNEXTRDetentionID =@DETNEXTRDetentionID,
+	DetentionOffenseFacilityORIIdentifier =@DetentionOffenseFacilityORIIdentifier,
+	DetentionOffenseFacilityRegisterIdentifier =@DetentionOffenseFacilityRegisterIdentifier,
+	DetentionCourtCaseIdentifier =@DetentionCourtCaseIdentifier,
+	DetentionOffenseSequenceNumber=@DetentionOffenseSequenceNumber ,
+	DetentionOffenseStatuteChapterCode=@DetentionOffenseStatuteChapterCode,
+	DetentionOffenseStatuteSectionCode=@DetentionOffenseStatuteSectionCode ,
+	DetentionOffenseStatuteSubdivisionCode=@DetentionOffenseStatuteSubdivisionCode ,
+	DetentionOffenseStatuteSequenceCode=@DetentionOffenseStatuteSequenceCode ,
+	DetentionOffenseMOCcode=@DetentionOffenseMOCcode ,
+	DetentionOffenseText =@DetentionOffenseText,
+stribimportdate =NOW();
+
+
+
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\Bookings\\DetentionExtractFacilityClient.txt' into table temp_Client fields terminated by ',' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+(
+	@DetentionFacilityORIIdentifier ,
+	@DetentionFacilityClientIdentifier,
+	@DetentionFacilityClientNumber ,
+	@ClientFirstName ,
+	@ClientMiddleName,
+	@ClientLastName,
+	@ClientSuffixName,
+	@ClientBirthDate ,
+	@ClientRaceCode,
+	@ClientRaceText,
+	@ClientGenderCode,
+	@ClientGenderText ,
+	@ClientJuvenileIndicator)
+SET
+	DetentionFacilityORIIdentifier=@DetentionFacilityORIIdentifier ,
+	DetentionFacilityClientIdentifier=@DetentionFacilityClientIdentifier,
+	DetentionFacilityClientNumber=@DetentionFacilityClientNumber ,
+	ClientFirstName =@ClientFirstName,
+	ClientMiddleName=@ClientMiddleName,
+	ClientLastName=@ClientLastName,
+	ClientSuffixName=@ClientSuffixName,
+	ClientBirthDate =STR_TO_DATE(@ClientBirthDate,'%m/%d/%Y'),
+	ClientRaceCode=@ClientRaceCode,
+	ClientRaceText=@ClientRaceText,
+	ClientGenderCode=@ClientGenderCode,
+	ClientGenderText =@ClientGenderText,
+	ClientJuvenileIndicator=@ClientJuvenileIndicator,
+stribimportdate =NOW();
+
+
+##queries to check that everything imported ok
+
+
+select clientbirthdate, count(*)
+from temp_Client
+group by clientbirthdate
+;
+
+select DetentionStartDateTime, count(*)
+from temp_detention
+group by DetentionStartDateTime
+;
+
+select DetentionendDateTime, count(*)
+from temp_detention
+group by DetentionendDateTime
+;
+
+select DetentionCourtCaseSentenceStartDate, count(*)
+from temp_CourtCase
+group by DetentionCourtCaseSentenceStartDate
+;
+
+select DetentionControllingAgencyORIName, count(*)
+from temp_detention
+group by DetentionControllingAgencyORIName
+;
+
+select DetentionOffenseText, count(*)
+from temp_Offense
+group by DetentionOffenseText
+;
+
+select ClientLastName, count(*)
+from temp_Client
+group by ClientLastName
+
+;
+
+
+#run some cleanup on name fields
+update temp_Client set ClientLastname=trim(upper(ClientLastName));
+update temp_Client set ClientFirstname=trim(upper(ClientFirstname));
+update temp_Client set ClientMiddlename=trim(upper(ClientMiddlename));
+update temp_Client set ClientSuffixname=trim(upper(ClientSuffixname));
+
+
+update temp_Client set detentionfacilityoriidentifier=trim(detentionfacilityoriidentifier);
+update temp_charge set detentionoffensefacilityoriidentifier=trim(detentionoffensefacilityoriidentifier);
+update temp_CourtCase set detentionoffensefacilityoriidentifier=trim(detentionoffensefacilityoriidentifier);
+update temp_detention set detentionfacilityoriidentifier=trim(detentionfacilityoriidentifier);
+update temp_Offense set detentionoffensefacilityoriidentifier=trim(detentionoffensefacilityoriidentifier);
+update temp_charge set DETNEXTRDETENTIONID = trim(DETNEXTRDETENTIONID);
+update temp_Client set DetentionFacilityClientIdentifier = trim(DetentionFacilityClientIdentifier);
+update temp_Client set detentionfacilityclientnumber = trim(detentionfacilityclientnumber);
+update temp_Client set clientgendertext=trim(clientgendertext);
+update temp_CourtCase set DETNEXTRDETENTIONID=trim(DETNEXTRDETENTIONID);
+update temp_detention set DETNEXTRDETENTIONID=trim(DETNEXTRDETENTIONID);
+
+
+#check to make sure data doesn't overlap with old DATA
+select DetentionStartDateTime, count(*)
+from Jail_Detention
+group by DetentionStartDateTime
+order by 1 desc
+
+
+######################Insert into main TABLES
+
+#done
+insert into Jail_Detention
+select * from temp_detention;
+#done
+insert into Jail_Charge
+select * from temp_charge;
+#done
+insert into Jail_Client
+select * from temp_Client;
+
+
+#done
+insert into Jail_CourtCase
+select * from temp_CourtCase;
+
+#done
+insert into Jail_Offense
+select * from temp_Offense;
+
+
+
+
+##optimize the indexes
+
+OPTIMIZE TABLE Jail_Detention;
+OPTIMIZE TABLE Jail_Charge;
+OPTIMIZE TABLE Jail_Client;
+OPTIMIZE TABLE Jail_CourtCase;
+OPTIMIZE TABLE Jail_Offense;
+
+
+#update the "lastupdate" date in the newsroom inventory database
+update newsroomdata.inventory set lastupdate=now() where idnumber=77 or idnumber=78 or idnumber=79 or idnumber=80;
+
+
+
+
+SELECT       b.DETNextRDetentionID, a.detentionfacilityclientnumber as facilityclientnumber, a.ClientFirstName, a.ClientMiddleName, a.ClientLastName, a.ClientSuffixName, 
+                         a.ClientBirthDate, a.clientracetext, a.clientgendercode, b.DetentionStartDateTime as startdatetime, 
+                         b.DetentionEndDateTime as enddatetime, b.DetentionFacilityORIName as FacilityORIName, b.DetentionHoldReasonText as HoldReasonText,
+						 b.DetentionEndReasonText as EndReasonText, 
+                         c.DetentionOffenseSequenceNumber as OffenseSequenceNumber, c.DetentionOffenseStatuteChapterCode as OffenseStatuteChapterCode,
+						 c.DetentionOffenseStatuteSectionCode as OffenseStatuteSectionCode, 
+                         c.DetentionOffenseStatuteSequenceCode as OffenseStatuteSequenceCode, c.DetentionOffenseMOCcode as OffenseMOCcode, 
+						 c.DetentionOffenseText as OffenseText, 
+                         b.DetentionControllingAgencyORIName as ControllingAgencyORIName, e.DetDesc, d.DetentionCourtCaseIdentifier as CourtCaseIdentifier, 
+                         d.DetentionCourtCaseSentenceStartDate as CourtCaseSentenceStartDate
+FROM            Jail_Detention b INNER JOIN
+                         Jail_Client a ON b.detentionfacilityclientnumber = a.detentionfacilityclientnumber INNER JOIN
+                         Jail_Offense c ON b.DETNextRDetentionID = c.DETNextRDetentionID LEFT OUTER JOIN
+                         Jail_CourtCase d ON c.DETNextRDetentionID = d.DETNextRDetentionID LEFT OUTER JOIN
+                         Jail_lkup_dettype e ON b.DetentionTypeCode = e.DetCode
+WHERE       clientlastname is not null
+
+
+
+
