@@ -1,0 +1,323 @@
+########this imports the data we get each year from the Dept of Corrections on all state prisoners
+##This is from the COMS5 data system, and it replaces all the COMS5 data we have gotten previously
+##The tables that we eventually append this data into contain both the COMS4 and the COMS5 DATA
+##so it's important to maintain the COMS4 data, but delete the COMS5  
+##there are a few spots in the code below where you need to adjust the references to COMS5 to make this work properly
+
+
+
+
+
+#############VERY IMPORTANT --- look for references below to COMS5 and adjust accordingly####################
+
+
+CREATE TABLE Prison_Offender_temp (
+	OID varchar(50),
+	ObligationIdentifier varchar(50),
+	CommName varchar(200),
+	LegName varchar(200),
+	AuthID varchar(110),
+	Sex varchar(50),
+	DOB datetime,
+	LegStat varchar(50),
+	CurrStat varchar(50),
+	StatType varchar(50),
+	StatDate datetime,
+	CurrLocation varchar(255),
+	ISRecSend varchar(50),
+	DrvrLicID  varchar(50),
+	DrvrLicState  varchar(50),
+	StribImportDate datetime,
+	LastName varchar(50),
+	RestName varchar(50),
+	source varchar(10),
+	no_obligation varchar(10)
+		);
+	
+
+
+CREATE TABLE Prison_Sentence_temp(
+	OID varchar(50),
+	ObligationIdentifier varchar(50),
+	SentNo varchar(50),
+	AdmitDate varchar(50),
+	LegStat varchar(50),
+	SentType varchar(50),
+	SentAuth varchar(255),
+	SentStat varchar(50),
+	MaxYears varchar(50),
+	MaxMonths varchar(50),
+	MaxDays varchar(50),
+	JailCredit varchar(50),
+	EffSentDate datetime,
+	ExpDate varchar(50),
+	RelDate varchar(50),
+	CondRel varchar(50),
+	ActiveOffense varchar(50),
+	StribImportDate datetime,
+	source varchar(10),
+	governing varchar(10)
+			);
+
+
+
+CREATE TABLE Prison_Alias_temp(
+	OID varchar(50),
+	AliasName varchar(200),
+	NameType varchar(50),
+	DOB datetime,
+	Sex varchar(50),
+	StribImportDate datetime,
+	source varchar(10)
+
+			);
+	
+
+CREATE TABLE Prison_History_temp(
+	OID varchar(50),
+	StatDate datetime,
+	CurrStat varchar(50),
+	StatType varchar(50),
+	AuthID varchar(100),
+	CurrLoc varchar(255),
+	StribImportDate datetime,
+	source varchar(10)
+
+			);
+
+
+
+#the date fields in this table are not true dates; sometimes they say "life" or "Indeterminate"
+CREATE TABLE Prison_Obligation_temp(
+	OID varchar(50),
+	ObligationIdentifier varchar(50),
+	MNPrisCaseClassType varchar(50),
+	StatusTypeText varchar(50),
+	AdmitDate varchar(50),
+	ExpDate varchar(50),
+	RelDate varchar(50),
+	OverallMnDOCOffenseCategoryType varchar(50),
+	ActiveMnDOCOffenseCategoryType  varchar(50),
+	GoverningAdmitJurisdiction varchar(255),
+	GoverningReleaseJurisdiction varchar(255),
+	ObligationBasis varchar(100),
+	StribImportDate datetime,
+	source varchar(10)
+				);
+
+
+				
+
+#########################################################
+
+#empty out the tables that are used to pull in new data; if the tables already exist
+delete from Prison_Offender_temp;
+delete from Prison_Alias_temp;
+delete from Prison_History_temp;
+delete from Prison_Obligation_temp;
+delete from Prison_Sentence_temp;
+
+
+####CHANGE the two-digit year as part of the source on each of the tables
+
+
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\Prison\\tables\\Alias.txt' into table Prison_Alias_temp ignore 1 lines
+(	@var1)
+set
+	OID=SUBSTR(@var1,1,6),
+	AliasName=SUBSTR(@var1,7,185),
+	NameType=SUBSTR(@var1,192,30),
+	DOB =STR_TO_DATE(SUBSTR(@var1,222,8),'%Y%m%d'),
+	Sex=SUBSTR(@var1,230,1),
+	StribImportDate=NOW(),
+	source='COMS5-17'	;
+	#change the number at end of source to represent the year imported
+
+
+
+
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\Prison\\tables\\Offender.txt' into table Prison_Offender_temp ignore 1 lines
+(	@var1)
+set
+OID=SUBSTR(@var1,1,6),
+CommName=SUBSTR(@var1,7,185),
+LegName=SUBSTR(@var1,192,185),
+AuthID=SUBSTR(@var1,377,100),
+Sex=SUBSTR(@var1,477,1),
+DOB=STR_TO_DATE(SUBSTR(@var1,478,8),'%Y%m%d'),
+LegStat=SUBSTR(@var1,486,1),
+CurrStat=SUBSTR(@var1,487,50),
+StatType=SUBSTR(@var1,537,50),
+StatDate=STR_TO_DATE(SUBSTR(@var1,587,8),'%Y%m%d'),
+CurrLocation=SUBSTR(@var1,595,255),
+ISRecSend=SUBSTR(@var1,850,1),
+DrvrLicID=SUBSTR(@var1,851,20),
+DrvrLicState=SUBSTR(@var1,871,2),
+StribImportDate=NOW(),
+Source='COMS5-17';
+#change the number at end of source to represent the year importedupdate Prison_Offender_temp set lastname= upper(trim(left(commname, locate(',', commname)-1))) where commname like '%,%'
+;
+
+update Prison_Offender_temp set lastname= upper(trim(left(commname, locate(',', commname)-1))) where commname like '%,%'
+;
+
+update Prison_Offender_temp set restname= upper(trim(substring(commname, locate(',', commname)+1, 100))) where commname like '%,%'
+;
+
+
+
+
+
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\Prison\\tables\\Sentence.txt' into table Prison_Sentence_temp ignore 1 lines
+(	@var1)
+set
+OID=SUBSTR(@var1,1,6),
+ObligationIdentifier=SUBSTR(@var1,7,9),
+SentNo=SUBSTR(@var1,16,20),
+AdmitDate=SUBSTR(@var1,36,50),
+LegStat=SUBSTR(@var1,86,1),
+SentType=SUBSTR(@var1,87,50),
+SentAuth=SUBSTR(@var1,137,255),
+SentStat=SUBSTR(@var1,392,20),
+MaxYears=SUBSTR(@var1,412,3),
+MaxMonths=SUBSTR(@var1,415,6),
+MaxDays=SUBSTR(@var1,421,6),
+JailCredit=SUBSTR(@var1,427,6),
+EffSentDate=STR_TO_DATE(SUBSTR(@var1,433,8),'%Y%m%d'),
+ExpDate=SUBSTR(@var1,441,50),
+RelDate=SUBSTR(@var1,491,50),
+CondRel=SUBSTR(@var1,541,50),
+ActiveOffense=SUBSTR(@var1,591,50),
+StribImportDate=NOW(),
+Source='COMS5-17';
+#change the number at end of source to represent the year imported
+
+
+
+
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\Prison\\tables\\Obligation.txt' into table Prison_Obligation_temp ignore 1 lines
+(	@var1)
+set
+OID=SUBSTR(@var1,1,6),
+ObligationIdentifier=SUBSTR(@var1,7,9),
+MNPrisCaseClassType=SUBSTR(@var1,16,1),
+StatusTypeText=SUBSTR(@var1,17,20),
+AdmitDate=SUBSTR(@var1,37,50),
+ExpDate=SUBSTR(@var1,87,50),
+RelDate=SUBSTR(@var1,137,50),
+OverallMnDOCOffenseCategoryType=SUBSTR(@var1,187,50),
+ActiveMnDOCOffenseCategoryType=SUBSTR(@var1,237,50),
+GoverningAdmitJurisdiction=SUBSTR(@var1,287,255),
+GoverningReleaseJurisdiction=SUBSTR(@var1,542,255),
+ObligationBasis=SUBSTR(@var1,797,68),
+StribImportDate=NOW(),
+Source='COMS5-17';
+#change the number at end of source to represent the year imported
+
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\Prison\\tables\\History.txt' into table Prison_History_temp ignore 1 lines
+(	@var1)
+set
+OID=SUBSTR(@var1,1,6),
+StatDate=STR_TO_DATE(SUBSTR(@var1,7,8),'%Y%m%d'),
+CurrStat=SUBSTR(@var1,15,50),
+StatType=SUBSTR(@var1,65,50),
+AuthID=SUBSTR(@var1,115,100),
+CurrLoc=SUBSTR(@var1,215,255),
+StribImportDate=NOW(),
+Source='COMS5-17';
+#change the number at end of source to represent the year imported
+
+###############################
+#The main prison tables contain data from both the old system (COMS4) and the new system (COMS5). 
+#This data that's being imported replaces ONLY  the new system data (COMS5)
+#So the delete queries below remove the COMS5 data from the old tables 
+#then there are queries that append the _temp tables into the main tables 
+
+
+
+####################VERY IMPORTANT##############################
+#these queries delete the last batch of COMS5 data from the main tables
+#change the source on this to the last one
+delete from Prison_Alias where source='COMS5';
+delete from Prison_History where source='COMS5';
+delete from Prison_Obligation where source='COMS5';
+delete from Prison_Offender where source='COMS5';
+delete from Prison_Sentence where source='COMS5';
+
+
+#insert the new data into the main tables
+
+insert into Prison_Alias
+select * from Prison_Alias_temp;
+
+insert into Prison_History
+select * from Prison_History_temp;
+
+insert into Prison_Obligation
+select * from Prison_Obligation_temp;
+
+insert into Prison_Offender
+select * from Prison_Offender_temp;
+
+insert into Prison_Sentence
+select * from Prison_Sentence_temp;
+
+#update the indexes on the main tables
+optimize table Prison_Alias;
+optimize table Prison_History;
+optimize table Prison_Obligation;
+optimize table Prison_Offender;
+optimize table Prison_Sentence;
+
+#update the "lastupdate" date in the newsroom inventory database
+update newsroomdata.inventory set lastupdate=now() where idnumber=23 or idnumber=24 or idnumber=25 or idnumber=26 or idnumber=27
+
+
+##create tables (from saved queries) that can be exported to dbnews1 server to show up on Uniquery
+##can delete these temp tables after the move is made
+create table temp_prison_uniquery
+select distinct *
+from prison_uniquery1
+;
+
+create table temp_prison_uniquery_sentences
+select distinct *
+from prison_uniquery2
+
+
+
+###
+#I had trouble transfering the sentences to db1 for Uniquery; it kept trying to convert those varchar "date" fields to actual dates
+#workaround was to create a target table on the db1 SERVER
+#here's the create table script for that; it needs to be run on the db1 server, though. not here
+#also need to go into SQL Server andproperties/permissions of the new tables and set persmissions (see Brain Dump for details)
+
+#CREATE TABLE temp_prison_uniquery_sentences (
+  oid varchar(50) ,
+  lastname varchar(50),
+  restname varchar(50) ,
+  sex varchar(50) ,
+  dob datetime ,
+	obligationidentifier varchar(50),
+  sentno varchar(50) ,
+  admitdate varchar(50) ,
+  legstat varchar(50) ,
+  senttype varchar(50) ,
+  sentauth varchar(255) ,
+  sentstat varchar(50) ,
+  maxyears varchar(50) ,
+  maxmonths varchar(50) ,
+  maxdays varchar(50) ,
+  jailcredit varchar(50) ,
+  effsentdate datetime ,
+  expdate varchar(50) ,
+  reldate varchar(50) ,
+  condrel varchar(50) ,
+  activeoffense varchar(50) ,
+  stribimportdate datetime ,
+  source char(10) ,
+  governing char(10) )
+
+
+
+
