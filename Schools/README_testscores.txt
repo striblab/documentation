@@ -3,27 +3,25 @@ Once the data is public, then you can find the data files in the MDE data center
 
 The files come as tab-delimited, with one for reading, one for math and one for science (which we didn't use this year). There are multiple rows of data for each school, each district, and then county-level and state-level results, too. 
 
-Data for 2012-13, 2013-14, 2014-15 and 2015-16 are stored in sandbox2 on the stsqlnewsusr server. They are in one table called "schools_MCA";
-there are tables that I created, called schools_schoollist and schools_districtlist, that are lookup tables with one record for each school (or district);
+Data for 2012-13, 2013-14, 2014-15 and 2015-16 are stored on Amazon server in the schools database. Table is called "MCA"
+
+there are tables that I created, called schoollist and districtlist, that are lookup tables with one record for each school (or district);
+
 this is where I've added some additional info that we find useful, such as whether the school/district is in the 7-county metro and things like that; Each year
 those tables need to be updated to add new schools/district. Would also be useful going forward to flag any schools/districts that are in those lists that are no longer operating.
 
-On the virtual server, stncar, I have a "Schools" Directory where I've saved the import specs for bringing in the test score files and the "special enrollment" population
-files that MDE puts out each year (these files have the number of kids on free-reduced lunch)
-There is also a "field descriptions" file from MDE for the test score data.
 
-Next year:
-Before the new data arrives, be sure to get updated files on special population enrollment from MDE and import those to the "schools_specialenroll" table
-on stsqlnewsusr in sandbox2. You can also use this to figure out which schools/districts need to be added to the schoollist and districtlist tables. Also check to 
+
+Before the new data arrives, be sure to get updated files on special population enrollment from MDE and import those to the "specialenroll" table
+You can also use this to figure out which schools/districts need to be added to the schoollist and districtlist tables. Also check to 
 for any name changes.
 
-Look at the saved queries in "queries for test score analysis.sql" (on stncar) to see if they will be sufficient for the schools reporters. Most of the queries 
-in there are meant to generate data that reporters can use for their story. Adjust as needed.
+Look at the saved queries in "queries for test score analysis.sql" to see if they will be sufficient for the schools reporters. Most of the queries in there are meant to generate data that reporters can use for their story. Adjust as needed.
 
 Go back into the code and create a uniqueID for all records made up of:   schoolID+"-"+datayear+"-"+subject.
 
 When new MCA data arrives:
-* Use the Visual Studio import solution to put the math and reading files into schools_MCA table. 
+* Import the new data 
 * Use the saved queries in "queries for test score analysis.sql" (on stncar) to run some update queries (populating schoolID is crucial first step) 
 and pull out whatever data the reporters need for their analysis.
 * At the bottom of those queries is the code for pulling out data for the data visualization. This assumes that the data viz will run off the same fields as we did for 15-16.
@@ -64,13 +62,8 @@ I also created a field that numbers those categories:
 
 
 DATA VIZ IDEA CHANGES:
-* Would like to be able to filter the list by the poverty level (high, medium, low), so that users could easily find the high-poverty schools
-that are "beating the odds" and the low-poverty schools that are "falling short"
+* Would like to be able to filter the list by the poverty level (high, medium, low), so that users could easily find the high-poverty schools that are "beating the odds" and the low-poverty schools that are "falling short"
 
-The print "beating the odds" and "falling short" lists -- were very popular. The beating odds list was only high-poverty metro-area schools and
-we pulled out the 10 with the biggest residual; the falling short was the 10 metro-area, low-poverty schools with biggest negative residuals; These are
-certainly incomplete "beating the odds" lists and I'd like to find a way to be able to allow users to see ALL the high-poverty schools 
-making that 
+The print "beating the odds" and "falling short" lists -- were very popular. The beating odds list was only high-poverty metro-area schools and we pulled out the 10 with the biggest residual; the falling short was the 10 metro-area, low-poverty schools with biggest negative residuals; These are certainly incomplete "beating the odds" lists and I'd like to find a way to be able to allow users to see ALL the high-poverty schools making that 
 
-* would like to revisit UX issues; we were worried that users would have a hard time understanding that the percentages at the top were also
-buttons for filtering. I didn't hear any complaints, though
+* would like to revisit UX issues; we were worried that users would have a hard time understanding that the percentages at the top were also buttons for filtering. I didn't hear any complaints, though
