@@ -1,0 +1,64 @@
+From:	MN_DOT_Data Practices <datapractices.dot@state.mn.us>
+Sent:	Friday, April 21, 2017 8:40 AM
+To:	Webster, MaryJo
+Cc:	Gutknecht, Kevin (DOT)
+Subject:	RE: Request for data related to Capital Highway Investment Plan
+
+MnDOT has received your request and will begin processing it. Please contact me with any questions.
+
+Thank you.
+
+Nicole Johnson 
+Office of Chief Counsel
+Data Practices Coordinator & Paralegal
+Minnesota Department of Transportation
+395 John Ireland Boulevard MS 140
+St. Paul, MN 55155
+Tel: 651-366-4816
+nicole.johnson@state.mn.us  
+
+
+From: Webster, MaryJo [mailto:MaryJo.Webster@startribune.com]  
+Sent: Thursday, April 20, 2017 1:46 PM 
+To: MN_DOT_Data Practices <datapractices.dot@state.mn.us> 
+Subject: Request for data related to Capital Highway Investment Plan
+
+This is a request under the Minnesota Government Data Practices Act. 
+
+I am requesting  the following: 
+
+1)	a copy of the GIS shapefile identifying projects that are on the 2017-2026 Capital Highway 
+Investment plan. The shapefile is being used for the interactive map that is on this webpage: 
+http://www.dot.state.mn.us/planning/10yearplan/. In addition, please provide any metadata – 
+record layouts, data dictionary, etc – that would be necessary to understand the data.
+
+2)	Copy of a similar shapefile, (or the underlying data if a shapefile hasn’t yet been created), that 
+goes with the update to the 10-year Capital Highway Investment plan that you are currently 
+working on. I realize this may not be ready for a few weeks, and that’s ok. In addition, please 
+provide any metadata – record layouts, data dictionary, etc – that would be necessary to 
+understand the data.
+
+3)	A copy of the DRAFT version of the Capital Highway Investment Plan that is currently being 
+worked on. I understand this likely won’t be ready until June. 
+
+
+As a member of the media representing the public interest, I ask that any fees for this request be 
+waived. However, if there will be any cost associated with fulfilling this request, please provide me an 
+estimate in advance so that I can get it approved by my supervisors. 
+
+Just an FYI that I plan to use ArcGIS desktop for working with the shapefiles I have requested. 
+
+Please don’t hesitate to contact me with questions at this email or the office phone number below. 
+
+Thank you.
+
+MaryJo Webster 
+Data Editor 
+office: 612-673-1789 
+cell: 651-491-6576 
+maryjo.webster@startribune.com 
+Star Tribune Building | 650 3rd Ave S, Suite #1300 | Minneapolis, MN | 55488
+ 
+ 
+ 
+

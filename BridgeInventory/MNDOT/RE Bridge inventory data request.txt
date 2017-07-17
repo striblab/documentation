@@ -1,0 +1,55 @@
+From:	MN_DOT_Data Practices <datapractices.dot@state.mn.us>
+Sent:	Friday, April 21, 2017 8:48 AM
+To:	Webster, MaryJo
+Cc:	Gutknecht, Kevin (DOT)
+Subject:	RE: Bridge inventory data request
+
+MnDOT has received your request and will begin processing it.
+
+Thank you.
+
+Nicole Johnson 
+Office of Chief Counsel
+Data Practices Coordinator & Paralegal
+Minnesota Department of Transportation
+395 John Ireland Boulevard MS 140
+St. Paul, MN 55155
+Tel: 651-366-4816
+nicole.johnson@state.mn.us  
+
+
+From: Webster, MaryJo [mailto:MaryJo.Webster@startribune.com]  
+Sent: Thursday, April 20, 2017 1:56 PM 
+To: MN_DOT_Data Practices <datapractices.dot@state.mn.us> 
+Subject: Bridge inventory data request
+
+This is a request under the Minnesota Government Data Practices Act. 
+
+I would like to request the most recent bridge inventory data on all Minnesota bridges. Please include all 
+fields of information. (I’m assuming this would be the fields that show up on the “Bridge Inspection and 
+Inventory Report” that can be generated for a single bridge from your website, 
+http://dotapp7.dot.state.mn.us/bridgereports/Content.aspx)
+
+I would prefer the data be provided in a text-delimited file or any other format that can be imported to 
+Excel or a database manager software. When the data is ready, please contact me and I can provide 
+access to the Star Tribune’s FTP account for uploading. Please also provide any record layouts, data 
+dictionaries or other metadata that would be necessary to understand the data.
+
+As a member of the media representing the public interest, I ask that any fees for this request be 
+waived. However, if there will be any cost associated with fulfilling this request, please provide me an 
+itemized estimate in advance so that I can get it approved by my supervisors. 
+
+Please don’t hesitate to contact me with questions at this email or the office phone number below. 
+
+Thank you.
+
+MaryJo Webster 
+Data Editor 
+office: 612-673-1789 
+cell: 651-491-6576 
+maryjo.webster@startribune.com 
+Star Tribune Building | 650 3rd Ave S, Suite #1300 | Minneapolis, MN | 55488
+ 
+ 
+ 
+
