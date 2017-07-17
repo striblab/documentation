@@ -1,0 +1,62 @@
+Bridge inspection data:
+
+The most up-to-date way to get bridge inspection data is from Minnesota Department of Transportation. However, you can get national data that will be about six months out of date from the National Bridge Inventory data that is easily accessible for a fee from IRE and NICAR.
+
+From MNDOT, you have to file an official public records request with their FOIA officer.
+Nicole Johnson 
+Office of Chief Counsel
+Data Practices Coordinator & Paralegal
+Minnesota Department of Transportation
+395 John Ireland Boulevard MS 140
+St. Paul, MN 55155
+Tel: 651-366-4816
+nicole.johnson@state.mn.us  
+
+However, the person I dealt with regarding the data is David Hedeen -- he was super helpful.
+
+David Hedeen
+Bridge Inventory Management Unit  
+651-366-4528
+
+The MNDOT inventory contains dozens of tables. Hedeen gave me the full list of tables and fields (see record layouts and table scripts),
+but only gave me a few tables that really contained what I needed. I found I really only needed "bridge", "inspevnt" and "roadway"
+
+The bridge table has one record for each bridge and contains the bulk of the info you need - bridge number, location, lat/long, length, etc.
+The roadway table, though, is necessary to get the average traffic volume. The "inspevnt" table is the inspections table -- one record for each
+inspection. The data had inspections going back to the 1990s, at least, for some bridges. Here's where you get the sufficiency ratings.
+
+The inventory contains a lot of bridges that generally are not included when you do an analysis of "deficient" bridges. There are pedestrian
+bridges, railroad bridges, and even privately-owned bridges or others that are not under the jurisdiction of MNDOT. 
+
+The universe of bridges that are reported to the National Bridge Inventory is supposed to only be highway bridges that are 20 feet or longer, but
+Hedeen said (and the data confirms) that states don't always adhere to that. He also said that the rules about what should or should not be included 
+has changed over the years. So to do my analysis he recommended I limit my analysis to bridges that are 20 feet or longer, open to traffic,
+and carry highway (not railroads or pedestrians). 
+
+Here's the query to do that in the Minnesota data:
+
+select *
+from mnbridge
+where tot_length>=6.096 and (oppostcl='A' or oppostcl='G') and (servtypon='1' or servtypon='4' or servtypon='5')
+
+FYI: the bridge length in both sets of data is in meters. 6.096=20 feet.
+
+Oppostcl="A" is open. and oppostcl='G' is 'new but not yet open'
+
+servtypon 1, 4 or 5 are service types that include highway traffic.
+
+You also need to ignore bridges where the "createuserkey" field has any one of these codes below. These are
+indicators that the bridge is either privately owned or owned by a city or some other entity that
+exempts it from being included in the national inventory. But those entities have requested MNDOT include them in their state inventory.
+
+where createuserkey='3' or createuserkey='246' or createuserkey='242' or createuserkey='309'
+
+FOR THE NATIONAL BRIDGE INVENTORY:
+There are usually more than 1 record for each bridge -- one for what goes on it, one for what goes under it, etc. So you need to limit to 
+jsut those records with rectype="1"
+
+This would be the query to get just the bridges that we care about:
+select *
+from usbridges2016
+where rectype='1' and (onserve='1' or onserve='4' or onserve='5') and strcstat<>'K' and STRLNGNO>=6.096
+
