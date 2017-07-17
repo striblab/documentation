@@ -1,5 +1,4 @@
-
-SEE Hargarten's github repository for "AnalysisNotes"; a copy of this file is also saved there
+These queries are designed for SQL Server. Will need tweaking for mySQL
 
 
 ''###running this first query is crucial
