@@ -1,9 +1,12 @@
+The main copy of this is stored on github/striblab/documentation/schools
+
+
 Data source: The Minnesota Comprhensive Assessment scores are released by the Minnesota Department of Education, around the end of July each year. They typically provide embargo access to media the day before it is released publicly. You need to apply to MDE each year in order to have access to the embargo site. 
 Once the data is public, then you can find the data files in the MDE data center under "assessment and growth."
 
 The files come as tab-delimited, with one for reading, one for math and one for science (which we didn't use this year). There are multiple rows of data for each school, each district, and then county-level and state-level results, too. 
 
-Data for 2012-13, 2013-14, 2014-15 and 2015-16 are stored on Amazon server in the schools database. Table is called "MCA"
+Data starting in 2000-01, going forward, are stored on Amazon server in the schools database. Table is called "MCA"
 
 there are tables that I created, called schoollist and districtlist, that are lookup tables with one record for each school (or district);
 
@@ -59,6 +62,12 @@ I also created a field that numbers those categories:
 1 - Falling short
 2 - As expected
 3 - Better than expected
+
+
+
+RECODE RES_1 (MISSING=0) (Lowest thru -0.095=1) (-.0951 thru .09509=2) (0.0951 thru Highest=3) INTO
+    CategoryNum.
+
 
 
 DATA VIZ IDEA CHANGES:
