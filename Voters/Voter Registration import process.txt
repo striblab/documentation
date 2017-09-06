@@ -5,6 +5,7 @@ The FTP site is ftp.sos.state.mn.us   usually works best with FTP client softw
 
        User: startribdata
        Password: TV1GhN32+eo3Q61
+       (Leave the Port field blank in Filezilla)
        The files are encrypted and compressed, no client software is needed, the password for decrypting is 2016StarTribData 
 
 There will be 18 compressed files.
