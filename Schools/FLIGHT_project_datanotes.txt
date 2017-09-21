@@ -1,0 +1,85 @@
+﻿School FLIGHT project notes, 2017:
+
+Data sources:
+1) Open enrollment by race -- MDE provided separate files for each school year between 99-00 and 16-17, counting the number of students leaving each district in the state and going to another traditional district, broken down by race. Some data was redacted in any cases where there were fewer than 3 students in a cell. For example, if 2 black students left Roseville to go to Maplewood we wouldn't see that at all. There isn't even a placeholder. As a result, this dataset is a conservative measure of how many kids are leaving their districts via openenrollment.
+2) Charter school enrollment by race, by resident district -- MDE provided separate files for each school year between 99-00 and 16-17 counting the number of students leaving each district in the state and going to a charter school, broken down by race. Some data was redacted in any cases where there were fewer than 3 students in a cell. 
+3) Overall open enrollment -- We also have the regular open enrollment files that show total movement from one district to another, but not broken down by race. These files are not redacted so this would represent the full movement of kids via open enrollment. We don't have something similar for charter schools, however we do have regular enrollment counts that would allow us to see which charter schools might be "short"
+4) Regular enrollment files by race -- These are needed to get the total enrollment counts for each district
+5) MDE also gave us a file called "FY 2016 Compulsory ATtendance Data by Dst.xlsx" that has the number of kids being homeschooled or going to private school by what district they live in. They couldn't provide this broken down by race, so the only way we could use this is as part of an analysis looking at the overall outflow of students in each district. I also put that file on the mySQL server -- table called HomePrivateEnroll.
+6) openenroll_bypoverty -- This is the first attempt by MDE to give us data on kids going to charters and open enrollment by whether or not they are on free/reduced lunch. However, this is heavily redacted when there are fewer than 10 students (they seem to have forgotten that previously they redacted for less than 3 students). So we quickly discovered that this was massively incomplete. 
+7) openenroll_bypoverty_v2 -- this is the attempt to get a more complete dataset showing whether poor kids were leaving districts. The thing we gave up is that it doesn't show where kids are going. So we can't calculate how many come into a district and we also can't really calculate the resident population. 
+8) We got MAP test results from Minneapolis for 3rd graders going back to 2000. It breaks down the scores by whether they are a minority or not.
+9) We also used MCA test data
+
+Most of the data came via special requests to MDE; they were filled by Kara Arzamendia, one of the data people there. She was immensely helpful. Her email is kara.arzamendia@state.mn.us and her phone is 651-582-8599
+Some of it came from the MDE data portal on their website
+
+
+All of the data is stored on the Amazon server, schools database. 
+--openenroll_byrace -- original table that combines the open enrollment by race and charter enrollment by race (field called "charterflag" indicates which file the data came from, either "charter" or "trad")
+--openenroll -- original table of overall open enrollment
+--enroll_race_district -- this has regular enrollment by race data for all years; it is in the "old" format that MDE has used with only breakdowns for American Indian, Asian, Black, white and Hispanic. I added columns on the far right that combine the boys and girls. (the file called enroll_race_district_new is the new format MDE started using a few years ago that has a "multi-race" and a separate category for Pacific Islander). 
+
+
+
+Analysis:
+I made a table on the mySQL server called "race_enroll_analysis" that collapses the data so that we're no longer seeing "where" the kids are going. We're only seeing the quantity of kids coming, going, staying, etc. in each traditional district. This contains districts throughout the state, but I eliminated the intermediate, coops and other unusual districts. (Only contains those with district type of "01" or "03") 
+
+Fields:
+Enrolled -- total enrollment for that race from the regular enrollment files by race
+Leaving_To_Trad -- number of kids who live in the district that are open enrolled in other districts
+Leaving_To_Charter -- number of kids who live in the district who attend a charter school
+ComingIn -- number of kids who come into the district but live in another district
+TotalEnrolled -- this is the districts' total enrollment (all races combined)
+
+In order to determine the number of "residents" in a district, you take the Enrolled and subtract the comingIn, then add the Leaving_To_Charter and add the Leaving_to_charter. 
+
+Creating that file required several steps. All the queries to do that are on the server in the queries file called "open enroll queries v3"
+
+I had some other saved query files with all my various attempts to analyze this data, but I decided to delete them because so many of my initial attempts were incomplete or imperfect in some way or another. 
+
+Later I created "race_enroll_analysis_v3" that collapses the totals into one line for each district, each year -- with the race numbers going across in columns. This ended up being the main source for our dataviz and most of our graphics. 
+
+
+
+
+My analysis files are in W:/education/segregation/openenrollbyrace
+
+The excel file called "analysis april 27" has most of the work.
+--the sheet called "metrodistricts" is the data from "race_enroll_analysis" table, but it's only for the metro districts. 
+
+--And the sheet called "total loss by district" attempts to measure the total outflow or inflow in each district. The fields in yellow pulled the regular open enrollment data (to avoid the problem of the redacted records) and I decided to use those numbers. However, I discovered that the redactions really made no difference in these overall numbers. At most, it changed a district's percentage by 1 point. 
+
+
+In addition, I've been compiling various charts, data points, etc in this Google doc: 
+https://docs.google.com/document/d/1u6iMayCRLymJG5IGRAyUvfARy7NnLrMxOq_ttm98ye4/edit?usp=sharing
+(the most salient and most recent ones are at the top)
+
+And then I made this quick and dirty Tableau viz for the reporters to explore district by district:
+https://public.tableau.com/profile/mj.strib#!/vizhome/OpenEnroll/Dashboard1
+
+
+Some other files that I saved:
+-FLIGHT graphics_aug30 -- This contains most (if not all) of the data we used for the digital and print graphics.
+--dataviz_version2.xlsx --this is the data used to power the dataviz that Jeff Hargarten built, allowing readers to look up a district. It includes a few fixes that we encountered and some analysis that I did toward the end as we were checking things.
+--statewide totals analysis -- this is where I calculated the overall "leaving" trends at the state level, at the core cities, suburb and out state levels. 
+--St Paul Public Schools_apr21 -- this has some analysis specific to St Paul that I sent to Tony Lonetree
+--pct leaving map.mxd and various shapefiles and original data files related to it -- this mapped the percent of total students in 16-17 leaving their districts to attend school elsewhere. This may need to be repeated if you want to use it, though. I'm not sure if it used the "by race" data or the overall open enrollment data. Note that it was kind of a pain to match up the data to the district shapefile because the shapefile has the district number and district type without the leading zeros. Would be worth keeping the "map_district_pctLeaving.xls" file just for the crosswalk matching those ID numbers to the full district ID number.
+--openenroll_tableau -- this is the underlying data for the Tableau visualization. Need to hang on to it. 
+--Mpls black kids achievement -- this is an analysis of MCA data for black students, comparing Minneapolis to the other districts (including charters) that pull black kids out of Minneapolis.
+--north mpls vs rest in math achievement -- Beena and I attempted to figure out if achievement in north Minneapolis schools was changing over time in a different trend line than the schools in other parts of the district. 
+--Analysis april 27_version 2 -- this contains most of my analysis work, especially at the district level. 
+--Open enroll free lunch analysis -- this is my analysis of the open enrollment data by whehter or not the kids are on free/reduced lunch. We ended up not doing much with this because it only shows where kids are leaving from. Doesn't show where they are going to. 
+
+
+
+
+Problem with 05-06 St Paul "coming in" total:
+When we charted the data, it became obvious that the number of kids counted as coming into the St Paul district in 05-06 was vastly short from what it should be. The years before and after were at least double or more. Kara at MDE confirmed that something might have gone wrong in St Paul's reporting that year and she recommended I come up with an estimate by referring to the before and after years. I'm thinking an average of the year before and year after would do the trick. I don't think it would be feasible to try to fix this in the main table. It would truly only need to be done if we are planning to publish something that shows the "coming in" numbers for each year.  I fixed the numbers, using averages, for the data visualization we are publishing and made sure that all the of the graphics reflect the correct numbers (in the graphics, it's mostly that the coming in number is part of the equation to figure out the number of residents -- which tends to be the denominator for a lot of our math).
+
+
+
+From Kara:
+Because charter schools don’t have school/district boundaries, all the students that enroll in a charter school have a different resident district than the charter. I can do a separate run to let you know who is enrolling in what charter from what resident districts but this should be considered somewhat differently than “open enrollment” since 100% of the students in a charter school will be coming from other places. These students would not be considered “open enrollment” how we currently define it. I’m attaching a screen shot of the open enrollment definition from our student enrollment manual (SAC means state aid category). This might be more in the weeds than you want to go but it should help you understand the universe of students who are considered open enrolling. The report you have, which uses the same definition on the Data Center, are those students with a state aid category of 01. If you have further questions about this, I might direct you to the enrollment team for further clarification.
+
+
