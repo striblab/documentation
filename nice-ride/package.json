@@ -1,0 +1,15 @@
+{
+  "name": "nice-ride-data-processing",
+  "version": "1.0.0",
+  "description": "[Nice Ride](https://www.niceridemn.org/) is the Twin Cities bike share program. They [release data](https://www.niceridemn.org/data/) each year.",
+  "main": "tables-config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "sequelize": "^4.33.2",
+    "tables": "0.0.5"
+  }
+}
