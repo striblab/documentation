@@ -37,7 +37,8 @@ module.exports = {
     parsed[t].account = original['Account type'];
     parsed[t].duration_seconds = original['Total duration (ms)']
       ? original['Total duration (ms)'] / 1000
-      : original['Total duration (Seconds)'];
+      : original['Total duration (Seconds)'] ||
+        original['Total duration (seconds)'];
 
     if (!parsed[t].start) {
       console.log(parsed, original);
