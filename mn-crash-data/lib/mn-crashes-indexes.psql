@@ -1,0 +1,92 @@
+-- Sorry, does not support running multiple times since IF NOT EXISTS
+-- is not supported everywhere in Postgres
+
+-- Primary key for crashes
+ALTER TABLE crash_acc_10_15 ADD PRIMARY KEY ("ACCN");
+
+-- Indexes for crashes
+CREATE INDEX crash_agency ON crash_acc_10_15 ("AGENCY");
+CREATE INDEX crash_accyear ON crash_acc_10_15 ("ACCYEAR");
+CREATE INDEX crash_accdate ON crash_acc_10_15 ("ACCDATE");
+CREATE INDEX crash_rtsys ON crash_acc_10_15 ("RTSYS");
+CREATE INDEX crash_rtnumber ON crash_acc_10_15 ("RTNUMBER");
+CREATE INDEX crash_refpt ON crash_acc_10_15 ("REFPT");
+CREATE INDEX crash_rddirect ON crash_acc_10_15 ("RDDIRECT");
+
+-- Add column for TIS code matchup
+ALTER TABLE crash_acc_10_15 ADD COLUMN strib_tis_code VARCHAR(11);
+ALTER TABLE crash_acc_10_15 ADD COLUMN strib_ref_pt DECIMAL;
+
+CREATE INDEX crash_strib_tis_code ON crash_acc_10_15 ("strib_tis_code");
+CREATE INDEX crash_strib_ref_pt ON crash_acc_10_15 ("strib_ref_pt");
+
+-- TIS code
+-- Should be a 10 character string.  The RTSYS field has a leading zero
+-- for everything
+UPDATE crash_acc_10_15
+SET strib_tis_code =
+  substring("RTSYS" from 2 for 2) ||
+	lpad("RTNUMBER", 8, '0')
+WHERE substring("RTSYS" from 1 for 1) = '0';
+
+-- Reference point.
+-- 8 columns make sense: PPP MM.MMM (where P = mile post and M = miles further)
+UPDATE crash_acc_10_15
+SET
+  strib_ref_pt = round(
+    CAST ((substring(lpad("REFPT", 8, '0') from 1 for 3)::float +
+    substring(lpad("REFPT", 8, '0') from 4 for 2)::float +
+    ('0.' || substring(lpad("REFPT", 8, '0') from 6 for 3))::float) AS numeric)
+  , 3)
+WHERE
+  "REFPT" IS NOT NULL
+  AND char_length("REFPT") > 0;
+
+-- Add column for points
+ALTER TABLE crash_acc_10_15 ADD COLUMN geom geometry(Point, 4326);
+CREATE INDEX crash_gix ON crash_acc_10_15 USING GIST (geom);
+
+-- Vacuum analyze
+VACUUM ANALYZE crash_acc_10_15;
+CLUSTER crash_acc_10_15 USING crash_gix;
+
+-- Indexes for roads
+CREATE INDEX mn_roads_gix ON mn_roads USING GIST (geom);
+CREATE INDEX mn_roads_route_syst ON mn_roads ("route_syst");
+CREATE INDEX mn_roads_route_numb ON mn_roads ("route_numb");
+CREATE INDEX mn_roads_tis_code ON mn_roads ("tis_code");
+-- Vaccum and cluster
+VACUUM ANALYZE mn_roads;
+CLUSTER mn_roads USING mn_roads_gix;
+
+
+
+ -- SELECT c."ACCN",
+ --    c.strib_tis_code,
+ --    c.strib_ref_pt,
+ --    c.geom
+ --   FROM crash_acc_10_15 c
+ --     LEFT JOIN ( SELECT DISTINCT mn_roads.tis_code
+ --           FROM mn_roads
+ --          WHERE mn_roads.geom IS NOT NULL) r ON c.strib_tis_code::text = r.tis_code::text
+ --  WHERE r.tis_code IS NOT NULL;
+
+-- Wrap up
+CREATE TABLE mn_roads_tis AS
+SELECT
+  r.tis_code AS tis,
+  ST_LineMerge(ST_Union(r.geom)) AS geom
+FROM mn_roads AS r
+WHERE r.geom IS NOT NULL
+GROUP BY r.tis_code;
+ALTER TABLE mn_roads_tis ADD PRIMARY KEY ("tis");
+CREATE INDEX mn_roads_tis_gix ON mn_roads_tis USING GIST (geom);
+-- Vaccum and cluster
+VACUUM ANALYZE mn_roads_tis;
+CLUSTER mn_roads_tis USING mn_roads_tis_gix;
+
+
+
+-- Add primary key
+ALTER TABLE land_use_split_sc ADD COLUMN gid_sc BIGSERIAL PRIMARY KEY;
+VACUUM ANALYZE land_use_split_sc;
