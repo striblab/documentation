@@ -71,22 +71,83 @@ CLUSTER mn_roads USING mn_roads_gix;
  --          WHERE mn_roads.geom IS NOT NULL) r ON c.strib_tis_code::text = r.tis_code::text
  --  WHERE r.tis_code IS NOT NULL;
 
--- Wrap up
+-- Create a table that is just TIS codes that we can match up, and will
+-- make most efficient for querying with accident data
 CREATE TABLE mn_roads_tis AS
 SELECT
   r.tis_code AS tis,
-  ST_LineMerge(ST_Union(r.geom)) AS geom
+  ST_LineMerge(ST_Union(ST_Force2D(r.geom))) AS geom,
+  0.0 as length
 FROM mn_roads AS r
-WHERE r.geom IS NOT NULL
+WHERE
+  r.geom IS NOT NULL
+  AND r.traffic_di IN ('B', 'I')
 GROUP BY r.tis_code;
 ALTER TABLE mn_roads_tis ADD PRIMARY KEY ("tis");
+
+-- Determine data, since the functino we need in PostGIS is interpolate
+-- along.
+UPDATE mn_roads_tis SET length = ST_Length(ST_Transform(geom, 2877)) / 5280;
+
+-- Index, etc.
 CREATE INDEX mn_roads_tis_gix ON mn_roads_tis USING GIST (geom);
--- Vaccum and cluster
 VACUUM ANALYZE mn_roads_tis;
 CLUSTER mn_roads_tis USING mn_roads_tis_gix;
 
 
 
--- Add primary key
-ALTER TABLE land_use_split_sc ADD COLUMN gid_sc BIGSERIAL PRIMARY KEY;
-VACUUM ANALYZE land_use_split_sc;
+-- Add columns for our lat, lon
+ALTER TABLE crash_acc_10_15 ADD COLUMN strib_lat DECIMAL;
+ALTER TABLE crash_acc_10_15 ADD COLUMN strib_lon DECIMAL;
+SELECT AddGeometryColumn('crash_acc_10_15', 'geom', 4326, 'POINT', 2);
+
+CREATE INDEX crash_strib_lat ON crash_acc_10_15 ("strib_lat");
+CREATE INDEX crash_strib_lon ON crash_acc_10_15 ("strib_lon");
+CREATE INDEX crash_point_gix ON crash_acc_10_15 USING GIST (geom);
+VACUUM ANALYZE crash_acc_10_15;
+CLUSTER crash_acc_10_15 USING crash_point_gix;
+
+
+
+-- Test points
+CREATE TABLE crash_acc_points_test AS
+SELECT
+  c."ACCN" AS crash_id,
+  c.strib_tis_code AS crash_tis,
+  r.tis AS road_tis,
+  c.strib_ref_pt,
+  r.length,
+  c.strib_ref_pt / r.length AS percent,
+  ST_X(ST_LineInterpolatePoint(r.geom, c.strib_ref_pt / r.length)) AS lon,
+  ST_Y(ST_LineInterpolatePoint(r.geom, c.strib_ref_pt / r.length)) AS lat,
+  ST_LineInterpolatePoint(r.geom, c.strib_ref_pt / r.length) AS crash_point
+FROM crash_acc_10_15 AS c
+  JOIN mn_roads_tis AS r
+    ON c.strib_tis_code = r.tis
+WHERE
+  c.strib_ref_pt > 0
+  AND c.strib_ref_pt IS NOT NULL
+  AND c.strib_ref_pt <= r.length
+  AND ST_GeometryType(r.geom) = 'ST_LineString';
+
+
+-- Counts
+SELECT
+  (SELECT COUNT(*) FROM crash_acc_10_15) AS crash_count,
+  (SELECT COUNT(*) FROM crash_acc_points_test) AS crash_points,
+  (SELECT COUNT(*) FROM crash_acc_points_test) * 1.0 /
+    (SELECT COUNT(*) FROM crash_acc_10_15) AS per_crash_points,
+
+  (SELECT COUNT(*) FROM crash_acc_10_15
+    WHERE strib_tis_code IS NOT NULL
+    AND strib_tis_code != '9800009999'
+    AND strib_ref_pt IS NOT NULL
+    AND strib_ref_pt > 0
+    AND strib_ref_pt < 900) AS crash_reference_count,
+  (SELECT COUNT(*) FROM crash_acc_points_test) * 1.0 /
+    (SELECT COUNT(*) FROM crash_acc_10_15
+      WHERE strib_tis_code IS NOT NULL
+      AND strib_tis_code != '9800009999'
+      AND strib_ref_pt IS NOT NULL
+      AND strib_ref_pt > 0
+      AND strib_ref_pt < 900) AS pre_crash_reference_count;
