@@ -69,6 +69,9 @@ RECODE RES_1 (MISSING=0) (Lowest thru -0.095=1) (-.0951 thru .09509=2) (0.0951 t
     CategoryNum.
 
 
+Proficiency definition:
+Prior to the 05-06 school year, there were 5 proficiency levels. Levels 3, 4, and 5 were considered "proficient" (or above). Starting in 05-06, they dropped down to four levels. Now levels 3 and 4 are considered proficient.
+
 
 DATA VIZ IDEA CHANGES:
 * Would like to be able to filter the list by the poverty level (high, medium, low), so that users could easily find the high-poverty schools that are "beating the odds" and the low-poverty schools that are "falling short"
