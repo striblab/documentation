@@ -1,5 +1,6 @@
 .*cache*
 build/*
+.tables.debug
 
 
 # Common
