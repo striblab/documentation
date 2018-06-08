@@ -10,6 +10,7 @@ name = "pypi"
 eikon = "*"
 python-dotenv = "*"
 mysqlclient = "*"
+"jinja2" = "*"
 
 
 [dev-packages]
