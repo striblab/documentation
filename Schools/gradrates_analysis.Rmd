@@ -1,0 +1,172 @@
+---
+title: "Graduation rates"
+output: html_notebook
+---
+
+Graduation rates
+
+```{r}
+library(RMySQL)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(readr) #importing csv files
+library(reshape2) #use this for melt function to create one record for each team
+library(tidyr)
+library(janitor) #use this for doing crosstabs
+library(readxl)
+
+setwd = 'C:/Users/webstmj/OneDrive - Star Tribune/education/gradrates'
+
+
+#this script imports the new data, marries it to the old data and prepares it for analysis
+#the actual analysis portion is not yet scripted (but should be when 2018 data comes out)
+```
+
+
+
+```{r}
+
+#pull in older data -- make sure pulling the correct csv
+dist_gradrates_old <- read_csv("districts1317.csv") 
+schools_gradrates_old <- read_csv("schools1317.csv")
+
+
+#Import district-level grad rates for current school year
+#UPDATE THE NAME OF THE FILE AND THE CELLS RANGE
+
+dist_gradrates_new <- read_excel("2017 Graduation Indicators.xlsx", sheet="District", range="B6:T11026") %>%   rename(datayr=`Data\r\nYear`, distnumber=`District\r\nNumber`, disttype=`District\r\nType`, districtname=`District\r\nName`, demcategory=`Demographic\r\nCategory`, dem_description=`Demographic\r\nDescription`, ending_status=`Ending\r\nStatus`, fouryr_count=`Four \r\nYear\r\nCount`, fouryr_total=`Four \r\nYear\r\nTotal`, fouryr_pct=`Four \r\nYear\r\nPercent`,fiveyr_count=`Five \r\nYear\r\nCount`, fiveyr_total=`Five \r\nYear\r\nTotal`, fiveyr_pct=`Five \r\nYear\r\nPercent`, sixyr_count=`Six \r\nYear\r\nCount`, sixyr_total=`Six \r\nYear\r\nTotal`, sixyr_pct=`Six\r\nYear\r\nPercent`, sevenyr_count=`Seven \r\nYear\r\nCount`, sevenyr_total=`Seven\r\nYear\r\nTotal`, sevenyr_pct=`Seven\r\nYear\r\nPercent`)
+
+#Import SCHOOL-level grad rates for current school year
+#UPDATE THE NAME OF THE FILE AND THE CELLS RANGE
+
+school_gradrates_new <- read_excel("2017 Graduation Indicators.xlsx", sheet="School", range="A6:X17322") %>% rename(datayr=`Data\r\nYear`, distnumber=`District\r\nNumber`, disttype=`District\r\nType`, districtname=`District\r\nName`, schoolnumber=`School\r\nNumber`, schoolname=`School\r\nName`,        demcategory=`Demographic\r\nGroup`, dem_description=`Demographic\r\nDescription`, ending_status=`Ending\r\nStatus`, 
+fouryr_count=`Four \r\nYear\r\nCount`, fouryr_total=`Four \r\nYear\r\nTotal`, 
+fouryr_pct=`Four \r\nYear\r\nPercent`,fiveyr_count=`Five \r\nYear\r\nCount`, fiveyr_total=`Five \r\nYear\r\nTotal`, fiveyr_pct=`Five \r\nYear\r\nPercent`, sixyr_count=`Six \r\nYear\r\nCount`, sixyr_total=`Six \r\nYear\r\nTotal`, sixyr_pct=`Six\r\nYear\r\nPercent`, sevenyr_count=`Seven \r\nYear\r\nCount`, sevenyr_total=`Seven\r\nYear\r\nTotal`, sevenyr_pct=`Seven\r\nYear\r\nPercent`, schoolclassification=`School Classification`, schoolcountynumber=`School County Number`, schoolcountyname=`School County Name`)
+
+
+#append new data to old data
+dist_rates <-  rbind(dist_gradrates_old, dist_gradrates_new)
+
+school_rates <-  rbind(schools_gradrates_old, school_gradrates_new)
+
+#EXPORT grad rates files with all the years that can be used in the future
+#MAKE SURE THE NEW FILE NAME HAS THE CORRECT YEARS
+
+#write.csv(dist_rates, "districts1318.csv")
+#write.csv(school_rates, "districts1318.csv")
+
+
+
+
+#Pull school and district info from MySQL
+
+#con <- dbConnect(RMySQL::MySQL(), host = rstudioapi::askForPassword("host"), dbname="Schools", user= rstudioapi::askForPassword("Database user"), password=rstudioapi::askForPassword("Database password"))
+
+
+con <- dbConnect(RMySQL::MySQL(), host = ("News-data-core-cluster.cluster-c2rw15kieaez.us-east-2.rds.amazonaws.com"), dbname="Schools", user= ("maryjow"), password=("towns-green-shovel"))
+
+
+data1 <- dbSendQuery(con, "select * from DistrictList")
+
+#this turns that data into a R data frame
+#the -1 means to pull all records; can change that to pull only a certain number
+districtlist <- fetch(data1, n=-1)
+dbClearResult(data1)
+
+
+
+data2 <- dbSendQuery(con, "select * from SchoolList")
+schoollist <- fetch(data2, n=-1)
+dbClearResult(data2)
+
+
+dbDisconnect(con)
+
+
+
+
+
+
+#add id numbers
+dist_rates <- dist_rates%>%mutate(idnumber=paste(distnumber, disttype,"000", sep="-"))
+school_rates <- school_rates%>%mutate(idnumber=paste(distnumber, disttype, schoolnumber, sep="-"))
+
+
+#winnow down the schoollist data
+school_locations <- schoollist%>%select(idnumber=SchoolID, Metro7county, Location)
+
+
+#winnow dow the districtlist data
+district_locations <- districtlist%>%select(idnumber=IDNumber,Metro7county=Metro7County, Location, County)
+
+
+dist_rates <- left_join(dist_rates, district_locations, by=c("idnumber"="idnumber"))
+
+#newdistricts <- districts%>%filter(is.na(Location))%>%group_by(idnumber, distnumber, disttype, districtname)%>%summarise(count=n())
+#write.csv(newdistricts, "adddistricts.csv")
+
+
+
+dist_rates_2 <- dist_rates%>%filter(disttype  %in% c("01","03"), ending_status=="Graduate")
+
+
+
+
+```
+```{r}
+
+#this pulls out just Minneapolis overall grad rates for all the years that we have
+
+mpls <- dist_rates_2%>%filter(distnumber=='0001', disttype=='03')
+
+mpls%>%filter(demcategory=="A")%>%select(datayr, dem_description, fouryr_count, fouryr_total, fouryr_pct)%>%arrange(datayr)
+
+#write.csv(mpls, "mpls.csv")
+
+
+#This pulls out just St. Paul overall grad rates for all the years that we have
+stpaul <- dist_rates_2%>%filter(distnumber=='0625', disttype=='01')
+
+stpaul_all <- dist_rates_2%>%filter(distnumber=='0625', demcategory=="A")%>%select(datayr, dem_description, fouryr_count, fouryr_total, fouryr_pct)%>%arrange(datayr)
+
+#write.csv(stpaul, "stpaul.csv")
+```
+```{r}
+
+#pull out the "all students" grad rates for all districts, all years
+districts_allstudents <- dist_rates_2%>%filter(demcategory=="A")%>%select(districtname, Metro7county, datayr, fouryr_pct)
+
+#write.csv(districts_allstudents, "districts_all.csv")
+
+
+```
+```{r}
+
+#create a new column that puts some of the categories into bigger buckets
+dist_rates_2 <- dist_rates_2%>%mutate(grouptype="NA")
+
+dist_rates_2$grouptype[dist_rates_2$demcategory == "A"] <- "All"
+dist_rates_2$grouptype[dist_rates_2$demcategory == "G"] <- "White"
+dist_rates_2$grouptype[dist_rates_2$demcategory == "J"] <- "Special Ed"
+dist_rates_2$grouptype[dist_rates_2$demcategory == "K"] <- "Free lunch"
+dist_rates_2$grouptype[dist_rates_2$demcategory == "O"] <- "Male"
+dist_rates_2$grouptype[dist_rates_2$demcategory == "P"] <- "Female"
+dist_rates_2$grouptype[dist_rates_2$demcategory == "B"] <- "Minority"
+dist_rates_2$grouptype[dist_rates_2$demcategory == "C"] <- "Minority"
+dist_rates_2$grouptype[dist_rates_2$demcategory == "E"] <- "Minority"
+dist_rates_2$grouptype[dist_rates_2$demcategory == "F"] <- "Minority"
+dist_rates_2$grouptype[dist_rates_2$demcategory == "H"] <- "Minority"
+dist_rates_2$grouptype[dist_rates_2$demcategory == "I"] <- "ELL"
+dist_rates_2$grouptype[dist_rates_2$demcategory == "Q"] <- "Migrant"
+dist_rates_2$grouptype[dist_rates_2$demcategory == "S"] <- "Limited or interrupted"
+dist_rates_2$grouptype[dist_rates_2$demcategory == "T"] <- "Homeless"
+
+
+
+#write.csv(dist_rates_2, "dist_rates_2.csv")
+
+
+
+```
+
