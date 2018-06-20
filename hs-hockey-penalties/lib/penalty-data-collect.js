@@ -51,16 +51,12 @@ async function main() {
 
   // Go through each season
   for (const seasonID of seasonIDs) {
-    // Get season details to get list of subseasons which has the regular season
+    // Get season details to get list of subseasons (regular, playoffs, ...)
     let seasonInfo = await nginFetch(`seasons/${seasonID}`);
-    let regularSeason = _.find(seasonInfo.subseasons, {
-      name: 'Regular Season'
-    });
-
-    if (regularSeason) {
+    for (const season of seasonInfo.subseasons) {
       // Get games.  This call can take a while.
       let games = await nginFetchPages('games', {
-        subseason_id: regularSeason.id,
+        subseason_id: season.id,
         per_page: 100
       });
       if (!games || !games.length) {
@@ -70,7 +66,7 @@ async function main() {
       // Go through each game
       for (const game of games) {
         // Write game rows
-        gameStream.write(gameRow(game, regularSeason, seasonInfo));
+        gameStream.write(gameRow(game, season, seasonInfo));
 
         // Then get the plays for each game
         let plays = await nginFetch('plays', {
@@ -88,15 +84,12 @@ async function main() {
           if (!p.play_actions) {
             console.error('No play actions found.');
           }
-          let r = penaltyRow(p, game, regularSeason, seasonInfo);
+          let r = penaltyRow(p, game, season, seasonInfo);
           if (r) {
             penaltyStream.write(r);
           }
         });
       }
-    }
-    else {
-      console.error(`Unable to find regular season for ${seasonID}`);
     }
   }
 

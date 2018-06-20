@@ -59,6 +59,29 @@ module.exports = {
         parseInt(original.clock_time_string.split(':')[1], 10) / 60;
     }
 
+    // General clean up of penalty name
+    p.penalty = p.penalty
+      .replace(/[^a-z/()]+/im, ' ')
+      .replace(/\s+/m, ' ')
+      .trim();
+
+    // Standardize some penalty names
+    // if (p.penalty === 'Blows to the Head') {
+    //   p.penalty = 'Head Contact';
+    // }
+    if (p.penalty === 'High Sticking') {
+      p.penalty = 'High-Sticking';
+    }
+    if (p.penalty === 'Too Many Men') {
+      p.penalty = 'Too Many Men on the Ice';
+    }
+    if (p.penalty === 'Cross Checking') {
+      p.penalty = 'Cross-Checking';
+    }
+    if (p.penalty === 'Goalkeeper Interference') {
+      p.penalty = 'Goaltender Interference';
+    }
+
     return {
       penalties: p
     };

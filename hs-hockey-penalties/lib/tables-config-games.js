@@ -22,6 +22,7 @@ module.exports = {
         start: Sequelize.DATE(),
         subseason_id: Sequelize.STRING(64),
         subseason_name: Sequelize.STRING(64),
+        subseason_group: Sequelize.STRING(64),
         season_id: Sequelize.STRING(64),
         season_name: Sequelize.STRING(64),
         league_season: Sequelize.STRING(64)
@@ -35,7 +36,10 @@ module.exports = {
           { fields: ['final_away_score'] },
           { fields: ['start'] },
           { fields: ['subseason_id'] },
-          { fields: ['season_id'] }
+          { fields: ['subseason_name'] },
+          { fields: ['subseason_group'] },
+          { fields: ['season_id'] },
+          { fields: ['season_name'] }
         ]
       }
     }
@@ -51,6 +55,32 @@ module.exports = {
     // Ints
     p.final_home_score = parseInt(original.final_home_score, 10);
     p.final_away_score = parseInt(original.final_away_score, 10);
+
+    // Some sub season names are not standard
+    if (p.subseason_name === 'Consolation Tourney') {
+      p.subseason_name = 'Consolation Tournament';
+    }
+    if (p.subseason_name === 'Third Place') {
+      p.subseason_name = 'Third Place Game';
+    }
+
+    // Group sub seasons, specifically to put tournaments parts together
+    p.subseason_group = 'other';
+    if (p.subseason_name === 'Regular Season') {
+      p.subseason_group = 'regular';
+    }
+    if (p.subseason_name === 'Section Playoffs') {
+      p.subseason_group = 'playoffs';
+    }
+    if (
+      ~[
+        'Consolation Tournament',
+        'State Tournament',
+        'Third Place Game'
+      ].indexOf(p.subseason_name)
+    ) {
+      p.subseason_group = 'tournament';
+    }
 
     return {
       games: p
