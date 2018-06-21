@@ -1,20 +1,33 @@
 {
-  "name": "sportsengine",
+  "name": "hs-hockey-penalties",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "analysis-data": "node lib/analysis-data.js",
+    "start": "npm run analysis-data && idyll index.idyll --defaultComponents=components/default --theme github --layout none --css static/styles.css --datasets build-data --watch",
+    "build": "npm run analysis-data && idyll index.idyll --defaultComponents=components/default --theme github --layout none --css static/styles.css --datasets build-data",
+    "deploy": "npm run build && gh-pages -d ./build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^5.0.0",
+    "chart.js": "^2.7.2",
+    "d3": "^4.0.0",
+    "dotenv": "^5.0.1",
     "fast-csv": "^2.4.1",
+    "glob": "^7.1.2",
+    "idyll": "^2.0.0",
+    "idyll-d3-component": "^2.0.0",
+    "idyll-vega-lite": "^1.0.2",
     "lodash": "^4.17.5",
+    "mysql": "^2.15.0",
     "node-fetch": "^2.0.0",
     "prettyjson": "^1.2.1",
-    "sequelize": "^4.37.8"
+    "react-chartjs-2": "^2.7.2",
+    "sequelize": "^4.37.8",
+    "vega": "^4.0.0-rc.3",
+    "vega-lite": "^2.5.2"
   },
   "devDependencies": {
     "fs-extra": "^5.0.0"

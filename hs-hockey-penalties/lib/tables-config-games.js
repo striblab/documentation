@@ -25,7 +25,27 @@ module.exports = {
         subseason_group: Sequelize.STRING(64),
         season_id: Sequelize.STRING(64),
         season_name: Sequelize.STRING(64),
-        league_season: Sequelize.STRING(64)
+        league_season: Sequelize.STRING(64),
+
+        all_penalty_count: Sequelize.INTEGER(),
+
+        changed_penalty_count: Sequelize.INTEGER(),
+        not_changed_penalty_count: Sequelize.INTEGER(),
+
+        minor_penalty_count: Sequelize.INTEGER(),
+        major_penalty_count: Sequelize.INTEGER(),
+        misconduct_penalty_count: Sequelize.INTEGER(),
+        double_minor_penalty_count: Sequelize.INTEGER(),
+
+        first_period_penalty_count: Sequelize.INTEGER(),
+        second_period_penalty_count: Sequelize.INTEGER(),
+        third_period_penalty_count: Sequelize.INTEGER(),
+        overtime_penalty_count: Sequelize.INTEGER(),
+
+        first_period_changed_penalty_count: Sequelize.INTEGER(),
+        second_period_changed_penalty_count: Sequelize.INTEGER(),
+        third_period_changed_penalty_count: Sequelize.INTEGER(),
+        overtime_changed_penalty_count: Sequelize.INTEGER()
       },
       options: {
         indexes: [
@@ -39,7 +59,22 @@ module.exports = {
           { fields: ['subseason_name'] },
           { fields: ['subseason_group'] },
           { fields: ['season_id'] },
-          { fields: ['season_name'] }
+          { fields: ['season_name'] },
+          { fields: ['all_penalty_count'] },
+          { fields: ['changed_penalty_count'] },
+          { fields: ['not_changed_penalty_count'] },
+          { fields: ['minor_penalty_count'] },
+          { fields: ['major_penalty_count'] },
+          { fields: ['misconduct_penalty_count'] },
+          { fields: ['double_minor_penalty_count'] },
+          { fields: ['first_period_penalty_count'] },
+          { fields: ['second_period_penalty_count'] },
+          { fields: ['third_period_penalty_count'] },
+          { fields: ['overtime_penalty_count'] },
+          { fields: ['first_period_changed_penalty_count'] },
+          { fields: ['second_period_changed_penalty_count'] },
+          { fields: ['third_period_changed_penalty_count'] },
+          { fields: ['overtime_changed_penalty_count'] }
         ]
       }
     }

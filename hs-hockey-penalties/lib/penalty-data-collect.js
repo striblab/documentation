@@ -14,7 +14,7 @@ require('dotenv').load();
 let cacheDir = path.join(__dirname, '..', '.sports-engine-cache');
 
 // CSV streams
-let outputDir = path.join(__dirname, '..', 'build');
+let outputDir = path.join(__dirname, '..', 'build-data');
 fs.ensureDirSync(outputDir);
 let penaltyOutput = fs.createWriteStream(path.join(outputDir, 'penalties.csv'));
 let penaltyStream = csv.createWriteStream({ headers: true });

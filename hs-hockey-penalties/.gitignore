@@ -1,6 +1,10 @@
+.idyll
 .*cache*
 build/*
+build-data/*
 .tables.debug
+!components
+!components/*
 
 
 # Common

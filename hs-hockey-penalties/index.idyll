@@ -1,0 +1,417 @@
+[meta title:"HS Hockey Penalties Analysis" description:"Some basic analysis of high school hockey penalty data with respect to Jack Jablonski penalty changes." /]
+
+[Header
+  title:"HS Hockey Penalties Analysis"
+  subtitle:"Some basic analysis of high school hockey penalty data with respect to Jack Jablonski penalty changes" /]
+
+In the 2011-2012 season, Jack Jablonski was paralyzed by an injury in a high school hockey game.  This lead to the following penalties being reclassified: **Checking from Behind**, **Boarding**, and **Head contact**, referred to as *changed penalties*.
+
+[var name:"colors" value:`["#66af50", "#bf603c", "#59a897", "#4c4c39"]` /]
+
+## Penalties per game by season
+
+Here, we see all penalties per game across seasons looking at each sub-season (regular, playoffs, and the tournaments).
+
+[data name:"penaltiesBySubSeason" source:"penalties-by-subseason.json" /]
+[LineChart
+  options:`{
+    responsive: true,
+    title: {
+      display: true,
+      text: "Penalties per game for each sub season."
+    },
+    scales: {
+      yAxes: [{
+        display: true,
+        ticks: {
+          suggestedMin: 0
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Penalties per game'
+        }
+      }],
+      xAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: 'Season'
+        }
+      }]
+    }
+  }`
+  data:`{
+    labels: penaltiesBySubSeason.filter(d => d.subseason_group === 'regular').map(d => d.season_name),
+    datasets: [{
+      lineTension: 0,
+      label: "Regular season",
+      fill: false,
+      borderColor: colors[0],
+      data: penaltiesBySubSeason.filter(d => d.subseason_group === 'regular').map(d => d.penalty_per_game)
+    }, {
+      lineTension: 0,
+      label: "Playoffs",
+      fill: false,
+      borderColor: colors[1],
+      data: penaltiesBySubSeason.filter(d => d.subseason_group === 'playoffs').map(d => d.penalty_per_game)
+    }, {
+      lineTension: 0,
+      label: "Tournaments",
+      fill: false,
+      borderColor: colors[2],
+      data: penaltiesBySubSeason.filter(d => d.subseason_group === 'tournament').map(d => d.penalty_per_game)
+    }]
+  }`
+  width:700
+  height:300 /]
+
+Now we can look at the just the *changed* penalties, **Checking from Behind**, **Boarding**, and **Head contact**.
+
+[LineChart
+  options:`{
+    responsive: true,
+    title: {
+      display: true,
+      text: "\"Changed\" penalties per game for each sub season."
+    },
+    scales: {
+      yAxes: [{
+        display: true,
+        ticks: {
+          suggestedMin: 0
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Penalties per game'
+        }
+      }],
+      xAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: 'Season'
+        }
+      }]
+    }
+  }`
+  data:`{
+    labels: penaltiesBySubSeason.filter(d => d.subseason_group === 'regular').map(d => d.season_name),
+    datasets: [{
+      lineTension: 0,
+      label: "Regular season",
+      fill: false,
+      borderColor: colors[0],
+      data: penaltiesBySubSeason.filter(d => d.subseason_group === 'regular').map(d => d.changed_penalty_per_game)
+    }, {
+      lineTension: 0,
+      label: "Playoffs",
+      fill: false,
+      borderColor: colors[1],
+      data: penaltiesBySubSeason.filter(d => d.subseason_group === 'playoffs').map(d => d.changed_penalty_per_game)
+    }, {
+      lineTension: 0,
+      label: "Tournaments",
+      fill: false,
+      borderColor: colors[2],
+      data: penaltiesBySubSeason.filter(d => d.subseason_group === 'tournament').map(d => d.changed_penalty_per_game)
+    }]
+  }`
+  width:700
+  height:300 /]
+
+Just the `minor_penalty`s.  This follows the trend of the total of all penalties, given that most of the penalties are minor.
+
+[LineChart
+  options:`{
+    responsive: true,
+    title: {
+      display: true,
+      text: "\"Minor\" penalties per game for each sub season."
+    },
+    scales: {
+      yAxes: [{
+        display: true,
+        ticks: {
+          suggestedMin: 0
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Penalties per game'
+        }
+      }],
+      xAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: 'Season'
+        }
+      }]
+    }
+  }`
+  data:`{
+    labels: penaltiesBySubSeason.filter(d => d.subseason_group === 'regular').map(d => d.season_name),
+    datasets: [{
+      lineTension: 0,
+      label: "Regular season",
+      fill: false,
+      borderColor: colors[0],
+      data: penaltiesBySubSeason.filter(d => d.subseason_group === 'regular').map(d => d.minor_penalty_per_game)
+    }, {
+      lineTension: 0,
+      label: "Playoffs",
+      fill: false,
+      borderColor: colors[1],
+      data: penaltiesBySubSeason.filter(d => d.subseason_group === 'playoffs').map(d => d.minor_penalty_per_game)
+    }, {
+      lineTension: 0,
+      label: "Tournaments",
+      fill: false,
+      borderColor: colors[2],
+      data: penaltiesBySubSeason.filter(d => d.subseason_group === 'tournament').map(d => d.minor_penalty_per_game)
+    }]
+  }`
+  width:700
+  height:300 /]
+
+Just the `major_penalty`s.
+
+[LineChart
+  options:`{
+    responsive: true,
+    title: {
+      display: true,
+      text: "\"Major\" penalties per game for each sub season."
+    },
+    scales: {
+      yAxes: [{
+        display: true,
+        ticks: {
+          suggestedMin: 0
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Penalties per game'
+        }
+      }],
+      xAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: 'Season'
+        }
+      }]
+    }
+  }`
+  data:`{
+    labels: penaltiesBySubSeason.filter(d => d.subseason_group === 'regular').map(d => d.season_name),
+    datasets: [{
+      lineTension: 0,
+      label: "Regular season",
+      fill: false,
+      borderColor: colors[0],
+      data: penaltiesBySubSeason.filter(d => d.subseason_group === 'regular').map(d => d.major_penalty_per_game)
+    }, {
+      lineTension: 0,
+      label: "Playoffs",
+      fill: false,
+      borderColor: colors[1],
+      data: penaltiesBySubSeason.filter(d => d.subseason_group === 'playoffs').map(d => d.major_penalty_per_game)
+    }, {
+      lineTension: 0,
+      label: "Tournaments",
+      fill: false,
+      borderColor: colors[2],
+      data: penaltiesBySubSeason.filter(d => d.subseason_group === 'tournament').map(d => d.major_penalty_per_game)
+    }]
+  }`
+  width:700
+  height:300 /]
+
+## By team
+
+The following table shows the number of penalties by each team for each full season.  It is sorted by `penalties_per_game`.
+
+[var name:"byTeamSelectSeason" value:"2009-2010" /]
+[Select value:byTeamSelectSeason options:`["2009-2010", "2010-2011", "2011-2012", "2012-2013", "2013-2014", "2015-2016", "2016-2017", "2017-2018"]` /]
+
+[data name:"penaltiesByTeam" source:"penalties-by-team.json" /]
+[Table showPagination:true pageSize:100 minRows:0 data:`penaltiesByTeam.filter(t => t.season_name === byTeamSelectSeason)` /]
+
+## By score
+
+The following chart looks at penalties per game for each seasons, broken down by the final score difference.
+
+[data name:"penaltiesByScore" source:"penalties-by-score.json" /]
+[LineChart
+  options:`{
+    responsive: true,
+    title: {
+      display: true,
+      text: "Penalties per game by final score difference"
+    },
+    scales: {
+      yAxes: [{
+        display: true,
+        ticks: {
+          suggestedMin: 0
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Penalties per game'
+        }
+      }],
+      xAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: 'Final score difference'
+        }
+      }]
+    }
+  }`
+  data:`{
+    labels: penaltiesByScore.filter(d => d.subseason_group === 'regular').map(d => d.final_score_diff),
+    datasets: [{
+      lineTension: 0,
+      label: "Regular season",
+      fill: false,
+      borderColor: colors[0],
+      data: penaltiesByScore.filter(d => d.subseason_group === 'regular').map(d => {
+        return { x: d.final_score_diff, y: d.penalty_per_game };
+      })
+    }, {
+      lineTension: 0,
+      label: "Playoffs",
+      fill: false,
+      borderColor: colors[1],
+      data: penaltiesByScore.filter(d => d.subseason_group === 'playoffs').map(d => {
+        return { x: d.final_score_diff, y: d.penalty_per_game };
+      })
+    }, {
+      lineTension: 0,
+      label: "Tournaments",
+      fill: false,
+      borderColor: colors[2],
+      data: penaltiesByScore.filter(d => d.subseason_group === 'tournament').map(d => {
+        return { x: d.final_score_diff, y: d.penalty_per_game };
+      })
+    }]
+  }`
+  width:700
+  height:300 /]
+
+Looking at the *changed* penalties per game by score.
+
+[LineChart
+  options:`{
+    responsive: true,
+    title: {
+      display: true,
+      text: "\"Changed\" penalties per game by final score difference"
+    },
+    scales: {
+      yAxes: [{
+        display: true,
+        ticks: {
+          suggestedMin: 0
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Penalties per game'
+        }
+      }],
+      xAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: 'Final score difference'
+        }
+      }]
+    }
+  }`
+  data:`{
+    labels: penaltiesByScore.filter(d => d.subseason_group === 'regular').map(d => d.final_score_diff),
+    datasets: [{
+      lineTension: 0,
+      label: "Regular season",
+      fill: false,
+      borderColor: colors[0],
+      data: penaltiesByScore.filter(d => d.subseason_group === 'regular').map(d => {
+        return { x: d.final_score_diff, y: d.changed_penalty_per_game };
+      })
+    }, {
+      lineTension: 0,
+      label: "Playoffs",
+      fill: false,
+      borderColor: colors[1],
+      data: penaltiesByScore.filter(d => d.subseason_group === 'playoffs').map(d => {
+        return { x: d.final_score_diff, y: d.changed_penalty_per_game };
+      })
+    }, {
+      lineTension: 0,
+      label: "Tournaments",
+      fill: false,
+      borderColor: colors[2],
+      data: penaltiesByScore.filter(d => d.subseason_group === 'tournament').map(d => {
+        return { x: d.final_score_diff, y: d.changed_penalty_per_game };
+      })
+    }]
+  }`
+  width:700
+  height:300 /]
+
+## By Period
+
+This looks at penalties per game for each period (and overtime).  First , we look at the `regular` season.
+
+[data name:"penaltiesByPeriod" source:"penalties-by-period.json" /]
+[LineChart
+  options:`{
+    responsive: true,
+    title: {
+      display: true,
+      text: "Penalties per game in the regular season by each period."
+    },
+    scales: {
+      yAxes: [{
+        display: true,
+        ticks: {
+          suggestedMin: 0
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Penalties per game'
+        }
+      }],
+      xAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: 'Season'
+        }
+      }]
+    }
+  }`
+  data:`{
+    labels: penaltiesByPeriod.filter(d => d.subseason_group === 'regular').map(d => d.season_name),
+    datasets: [{
+      lineTension: 0,
+      label: "Period 1",
+      fill: false,
+      borderColor: colors[0],
+      data: penaltiesByPeriod.filter(d => d.subseason_group === 'regular').map(d => d.first_period_penalty_per_game)
+    }, {
+      lineTension: 0,
+      label: "Period 2",
+      fill: false,
+      borderColor: colors[1],
+      data: penaltiesByPeriod.filter(d => d.subseason_group === 'regular').map(d => d.second_period_penalty_per_game)
+    }, {
+      lineTension: 0,
+      label: "Period 3",
+      fill: false,
+      borderColor: colors[2],
+      data: penaltiesByPeriod.filter(d => d.subseason_group === 'regular').map(d => d.third_period_penalty_per_game)
+    }, {
+      lineTension: 0,
+      label: "Overtime (4+)",
+      fill: false,
+      borderColor: colors[3],
+      data: penaltiesByPeriod.filter(d => d.subseason_group === 'regular').map(d => d.overtime_penalty_per_game)
+    }]
+  }`
+  width:700
+  height:300 /]
