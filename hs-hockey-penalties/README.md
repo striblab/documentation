@@ -29,3 +29,5 @@ We do some analysis with [Idyll](https://idyll-lang.org/).
   - To connect to the database, set the `HS_HOCKEY_DATABASE_URI` environment variable
   - Run: `node lib/analysis-data.js`
   - This will read all the SQL files in `queries/` and create JSON files in `build-data/`
+- To sync up to S3:
+  - `aws s3 --profile=profile sync ./build/ s3://bucket/data-notebooks/hs-hockey-penalties/`
