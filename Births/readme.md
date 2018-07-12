@@ -2,14 +2,17 @@
 Birth certificate data
 
 Source: Minnesota Department of Health
-Contact: Scott Smith, public information officer, 651-201-5806; scott.smith@state.mn.us
+Contact: 
+Neeti Sethi, neeti.sethi@state.mn.us
+Nosologist, Health Program Rep Inter
+Office of Vital Records
+Minnesota Department of Health 
+Office: 651-201-5966  
 
-Request data in January for the just completed prior year. Be sure to give them the list of fields that match the "births_main" table (it is stored in stnewsdb1 and the production copy with just the 2015 data is on stsqlnewsusr)
+
+Request data in January or February for the just completed prior year, however it is often April or May before the data is finalized. Be sure to give them the list of fields that match the "births_main" table.
 There's also a births_record layout Excel file that lists the fields.
-
-The 2015 data came as an XLS file. I converted it to a CSV file for ease of import. Also note that the dates came over as "22-MAR-71" and SQL handled them beautifully. Didn't need to do anything special.
-
-On stncar, in the D drive "Vital records" directory, there is a dtsx package for importing the table into "births_main." I didn't pull that into Visual Studio yet to set it up for running again. It's a pretty clean, straightforward import. Possibly the only thing you might want to add to the import is to have it populate the "birthyear" field (which is something I added)
+There is an MDH application form that needs to be filled out. 
 
 I kept a .sql file with queries I ran to merge the old data with the new and to clean up the data -- mostly the older records. It's highly doubtful that this would be needed in future years because the newer data is so much more consistent and standardized. The problems were all in the older years (like 20+ years ago). 
 
