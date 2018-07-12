@@ -1,0 +1,347 @@
+
+
+Use this code to categorize death records that involve opioids.....
+
+
+CODES THAT ARE DEFINITELY OPIOIDS:
+T402
+T403
+T401
+F119
+
+
+CODES THAT ARE CATCHALL:
+X42
+X44
+T509
+T406
+T404
+y12
+X62
+X64
+F192
+Y14
+
+#these queries are working on the death data in the original structure (all one table) as it comes from MDH
+
+SELECT *
+from Deaths_original
+limit 100
+
+#add column to flag opioid-related deaths 
+alter table Deaths_original
+add column opioids varchar(50);
+
+
+#these queries find records where the ICD codes are specific opioid-related codes
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD01='T402' OR RAC_ICD01='T403' OR RAC_ICD01='T401' OR RAC_ICD01='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD02='T402' OR RAC_ICD02='T403' OR RAC_ICD02='T401' OR RAC_ICD02='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD03='T402' OR RAC_ICD03='T403' OR RAC_ICD03='T401' OR RAC_ICD03='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD04='T402' OR RAC_ICD04='T403' OR RAC_ICD04='T401' OR RAC_ICD04='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD05='T402' OR RAC_ICD05='T403' OR RAC_ICD05='T401' OR RAC_ICD05='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD06='T402' OR RAC_ICD06='T403' OR RAC_ICD06='T401' OR RAC_ICD06='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD07='T402' OR RAC_ICD07='T403' OR RAC_ICD07='T401' OR RAC_ICD07='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD08='T402' OR RAC_ICD08='T403' OR RAC_ICD08='T401' OR RAC_ICD08='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD09='T402' OR RAC_ICD09='T403' OR RAC_ICD09='T401' OR RAC_ICD09='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD10='T402' OR RAC_ICD10='T403' OR RAC_ICD10='T401' OR RAC_ICD10='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD11='T402' OR RAC_ICD11='T403' OR RAC_ICD11='T401' OR RAC_ICD11='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD12='T402' OR RAC_ICD12='T403' OR RAC_ICD12='T401' OR RAC_ICD12='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD13='T402' OR RAC_ICD13='T403' OR RAC_ICD13='T401' OR RAC_ICD13='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD14='T402' OR RAC_ICD14='T403' OR RAC_ICD14='T401' OR RAC_ICD14='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD15='T402' OR RAC_ICD15='T403' OR RAC_ICD15='T401' OR RAC_ICD15='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD16='T402' OR RAC_ICD16='T403' OR RAC_ICD16='T401' OR RAC_ICD16='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD17='T402' OR RAC_ICD17='T403' OR RAC_ICD17='T401' OR RAC_ICD17='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD18='T402' OR RAC_ICD18='T403' OR RAC_ICD18='T401' OR RAC_ICD18='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD19='T402' OR RAC_ICD19='T403' OR RAC_ICD19='T401' OR RAC_ICD19='F119');
+
+update Deaths_original set opioids='true'
+where opioids is null and (RAC_ICD20='T402' OR RAC_ICD20='T403' OR RAC_ICD20='T401' OR RAC_ICD20='F119');
+
+#these codes are generic drug overdose codes or narcotics overdose codes
+#review records where these codes are used, referring to other fields for keywords
+CODES THAT ARE CATCHALL:
+X42
+X44
+T509
+T406
+T404
+y12
+X62
+X64
+F192
+Y14
+
+
+keywords:
+heroin, fentanyl, methadone, oxycodone, opiate, morphine, hydromorphone, tramadol, HYDROCODONE
+
+#pull records with those catchall codes and see what keyword pop up
+select ST_FILE_NBR, CAUSE_DTH_A, CAUSE_DTH_B, CAUSE_DTH_C, CAUSE_DTH_D, CAUSE_DTH_OTHR, INJURY_DESC
+from Deaths_original
+where rac_icd01='X42' or 
+rac_icd01='X44' or 
+rac_icd01='T509' or 
+rac_icd01='T406' or 
+rac_icd01='T404' or 
+rac_icd01='Y12' or 
+rac_icd01='X62' or 
+rac_icd01='X64' or 
+rac_icd01='F192' or 
+rac_icd01='Y14' 
+
+#most of the records returned by the previous query popped up the main keywords
+#so this query aims to flag those to winnow down the remaining records that need to be reviewed
+update Deaths_original set opioids='true' where opioids is NULL
+and (cause_dth_a like '%HEROIN%' OR CAUSE_DTH_A LIKE '%FENTANYL%'
+OR cause_dth_a like '%METHADONE%' OR 
+cause_dth_a like '%OXYCODONE%' OR 
+cause_dth_a like '%OPIATE%' OR 
+cause_dth_a like '%MORPHINE%'
+or cause_dth_a like '%HYDROMORPHONE%'
+or cause_dth_a like '%TRAMADOL%' OR CAUSE_DTH_A LIKE '%HYDROCODONE%'
+or cause_dth_a like '%CARFENTANIL%')
+
+
+#REVIEW REMAINING RECORDS IN THIS SAME SET
+select ST_FILE_NBR, CAUSE_DTH_A, CAUSE_DTH_B, CAUSE_DTH_C, CAUSE_DTH_D, CAUSE_DTH_OTHR, INJURY_DESC
+from Deaths_original
+where OPIOIDS IS NULL AND (Rac_icd01='X42' or 
+rac_icd01='X44' or 
+rac_icd01='T509' or 
+rac_icd01='T406' or 
+rac_icd01='T404' or 
+rac_icd01='Y12' or 
+rac_icd01='X62' or 
+rac_icd01='X64' or 
+rac_icd01='F192' or 
+rac_icd01='Y14' )
+ORDER BY INJURY_DESC DESC
+
+
+#any cases where it's merely "mixed drug" and doesn't specify opioids, we didn't flag
+
+#look for cases that mention these drugs but weren't caught using the ICd codes or the earlier queries
+select ST_FILE_NBR, CAUSE_DTH_A, CAUSE_DTH_B, CAUSE_DTH_C, CAUSE_DTH_D, CAUSE_DTH_OTHR, INJURY_DESC
+from Deaths_original
+where opioids is NULL  AND
+(INJURY_DESC like '%heroin%' or INJURY_DESC like '%fentanyl%' or INJURY_DESC like '%opiate%'
+or INJURY_DESC like '%oxycodone%' or INJURY_DESC like '%methadone%' or INJURY_DESC like '%morphine%'
+OR INJURY_DESC LIKE '%TRAMADOL%' OR INJURY_DESC LIKE '%HYDROCODONE%' or injury_desc like '%CARFENTANIL%')
+
+
+#update the ones that matched
+update Deaths_original set opioids='true'
+where opioids is NULL  AND
+(INJURY_DESC like '%heroin%' or INJURY_DESC like '%fentanyl%' or INJURY_DESC like '%opiate%'
+or INJURY_DESC like '%oxycodone%' or INJURY_DESC like '%methadone%' or INJURY_DESC like '%morphine%'
+OR INJURY_DESC LIKE '%TRAMADOL%' OR INJURY_DESC LIKE '%HYDROCODONE%' or injury_desc like '%CARFENTANIL%')
+
+
+
+#look for keywords in remaining records -- in CAUSE_DTH_b
+select ST_FILE_NBR, CAUSE_DTH_A, CAUSE_DTH_B, CAUSE_DTH_C, CAUSE_DTH_D, CAUSE_DTH_OTHR, INJURY_DESC
+from Deaths_original
+where opioids is NULL  AND
+(CAUSE_DTH_B like '%heroin%' or CAUSE_DTH_B like '%fentanyl%' or CAUSE_DTH_B like '%opiate%'
+or CAUSE_DTH_B like '%oxycodone%' or CAUSE_DTH_B like '%methadone%' or CAUSE_DTH_B like '%morphine%'
+or cause_dth_b like '%hydromorphone%' OR CAUSE_DTH_B LIKE '%TRAMADOL%' OR CAUSE_DTH_B LIKE '%HYDROCODONE%' or cause_dth_b like '%CARFENTANIL%')
+
+update Deaths_original set opioids='true' 
+where opioids is NULL  AND
+(CAUSE_DTH_B like '%heroin%' or CAUSE_DTH_B like '%fentanyl%' or CAUSE_DTH_B like '%opiate%'
+or CAUSE_DTH_B like '%oxycodone%' or CAUSE_DTH_B like '%methadone%' or CAUSE_DTH_B like '%morphine%'
+or cause_dth_b like '%hydromorphone%' OR CAUSE_DTH_B LIKE '%TRAMADOL%' OR CAUSE_DTH_B LIKE '%HYDROCODONE%' OR CAUSE_DTH_B LIKE '%CARFENTANIL%')
+
+#look for keywords in remaining records -- in CAUSE_DTH_C
+select ST_FILE_NBR, CAUSE_DTH_A, CAUSE_DTH_B, CAUSE_DTH_C, CAUSE_DTH_D, CAUSE_DTH_OTHR, INJURY_DESC
+from Deaths_original
+where opioids is NULL  AND
+(CAUSE_DTH_C like '%heroin%' or CAUSE_DTH_C like '%fentanyl%' or CAUSE_DTH_C like '%opiate%'
+or CAUSE_DTH_C like '%oxycodone%' or CAUSE_DTH_C like '%methadone%' or CAUSE_DTH_C like '%morphine%'
+or cause_dth_c like '%hydromorphone%' OR CAUSE_DTH_C LIKE '%TRAMADOL%' OR CAUSE_DTH_C LIKE '%HYDROCODONE%' OR CAUSE_DTH_C LIKE '%CARFENTANIL%')
+
+update Deaths_original set opioids='true'
+where opioids is NULL  AND
+(CAUSE_DTH_C like '%heroin%' or CAUSE_DTH_C like '%fentanyl%' or CAUSE_DTH_C like '%opiate%'
+or CAUSE_DTH_C like '%oxycodone%' or CAUSE_DTH_C like '%methadone%' or CAUSE_DTH_C like '%morphine%'
+or cause_dth_c like '%hydromorphone%' OR CAUSE_DTH_C LIKE '%TRAMADOL%' OR CAUSE_DTH_C LIKE '%HYDROCODONE%' OR CAUSE_DTH_C LIKE '%CARFENTANIL%')
+
+
+#look for keywords in remaining records -- in CAUSE_DTH_D
+select ST_FILE_NBR, CAUSE_DTH_A, CAUSE_DTH_B, CAUSE_DTH_C, CAUSE_DTH_D, CAUSE_DTH_OTHR, INJURY_DESC
+from Deaths_original
+where opioids is NULL  AND
+(CAUSE_DTH_D like '%heroin%' or CAUSE_DTH_D like '%fentanyl%' or CAUSE_DTH_D like '%opiate%'
+or CAUSE_DTH_D like '%oxycodone%' or CAUSE_DTH_D like '%methadone%' or CAUSE_DTH_D like '%morphine%'
+or cause_dth_d like '%hydromorphone%' OR CAUSE_DTH_D LIKE '%TRAMADOL%' OR CAUSE_DTH_D LIKE '%HYDROCODONE%' OR CAUSE_DTH_D LIKE '%CARFENTANIL%')
+
+
+
+#REVIEW the 2nd ICD code for possible drug deaths not coded as opioids
+select ST_FILE_NBR, CAUSE_DTH_A, CAUSE_DTH_B, CAUSE_DTH_C, CAUSE_DTH_D, CAUSE_DTH_OTHR, INJURY_DESC
+from Deaths_original
+where OPIOIDS IS NULL AND (rac_icd02='X42' or 
+rac_icd02='X44' or 
+rac_icd02='T509' or 
+rac_icd02='T406' or 
+rac_icd02='T404' or 
+rac_icd02='Y12' or 
+rac_icd02='X62' or 
+rac_icd02='X64' or 
+rac_icd02='F192' or 
+rac_icd02='Y14' )
+ORDER BY INJURY_DESC DESC
+
+
+#REVIEW the 3RD ICD code for possible drug deaths not coded as opioids
+select ST_FILE_NBR, CAUSE_DTH_A, CAUSE_DTH_B, CAUSE_DTH_C, CAUSE_DTH_D, CAUSE_DTH_OTHR, INJURY_DESC
+from Deaths_original
+where OPIOIDS IS NULL AND (rac_icd03='X42' or 
+rac_icd03='X44' or 
+rac_icd03='T509' or 
+rac_icd03='T406' or 
+rac_icd03='T404' or 
+rac_icd03='Y12' or 
+rac_icd03='X62' or 
+rac_icd03='X64' or 
+rac_icd03='F192' or 
+rac_icd03='Y14' )
+ORDER BY INJURY_DESC DESC
+
+
+
+#LOOK FOR OTHER RECORDS THAT START WITH T4 ICD CODES
+select *
+from Deaths_original
+where rac_icd01 like 'T4%' AND OPIOIDS IS NULL
+
+select *
+from Deaths_original
+where rac_icd02 like 'T4%' AND OPIOIDS IS NULL
+
+select  CAUSE_DTH_A, CAUSE_DTH_B, INJURY_DESC
+from Deaths_original
+where rac_icd03 like 'T4%' AND OPIOIDS IS NULL
+
+
+select CAUSE_DTH_A, CAUSE_DTH_B, INJURY_DESC
+from Deaths_original
+where rac_icd04 like 'T4%' AND OPIOIDS IS NULL
+
+
+
+#i MISSED THESE ON FIRST GO-AROUND --- SHOULDN'T NEED THESE QUERIES IN FUTURE CAUSE
+#I ADDED THESE KEYWORDS IN ABOVE QUERIES AFTER INITIALLY RUNNING THEM
+update Deaths_original set opioids='true'
+where OPIOIDS IS NULL AND (cause_dth_a like '%HYDROMORPHONE%' OR
+cause_dth_B like '%HYDROMORPHONE%' OR
+cause_dth_C like '%HYDROMORPHONE%' OR
+cause_dth_D like '%HYDROMORPHONE%' OR INJURY_DESC LIKE '%HYDROMORPHONE%')
+
+update Deaths_original set opioids='true'
+where OPIOIDS IS NULL AND (cause_dth_a like '%TRAMADOL%' OR
+cause_dth_B like '%TRAMADOL%' OR
+cause_dth_C like '%TRAMADOL%' OR
+cause_dth_D like '%TRAMADOL%' OR INJURY_DESC LIKE '%TRAMADOL%')
+
+update Deaths_original set opioids='true'
+where OPIOIDS IS NULL AND (cause_dth_a like '%HYDROCODONE%' OR
+cause_dth_B like '%HYDROCODONE%' OR
+cause_dth_C like '%HYDROCODONE%' OR
+cause_dth_D like '%HYDROCODONE%' OR INJURY_DESC LIKE '%HYDROCODONE%')
+
+
+#found this one in old data that shouldn't have been flagged as an opioid death
+UPDATE deaths_main set opioids = null where stateid='2016-MN-040667';
+delete from opioids_allyrs where st_file_nbr='2016-MN-040667'
+
+
+#LOOK FOR RECORDS THAT HAVE THE WORD DRUG IN INJURY DESC BUT HAVEN'T YET BEEN FLAGGED
+#THIS YIELDED MOSTLY THE "MIXED DRUG" CASES THAT WE CHOSE NOT TO INCLUDE
+select ST_FILE_NBR, CAUSE_DTH_A, CAUSE_DTH_B, CAUSE_DTH_C, CAUSE_DTH_D, CAUSE_DTH_OTHR, INJURY_DESC
+from Deaths_original
+where injury_desc like '%DRUG%' and opioids is NULL
+
+#COUNT UP HOW MANY DEATHS IN FIRST SIX MONTHS OF EACH YEAR
+select year(deathdate), count(*)
+from deaths_main
+where opioids='true'
+and month(deathdate)<7 
+group by year(deathdate)
+order by 1
+
+
+#count up whole years
+select year(deathdate), count(*)
+from deaths_main
+where opioids='true'
+group by year(deathdate)
+order by 1
+
+#COUNT UP THE OPIOID DEATHS THAT WERE FOUND
+select opioids, count(*)
+from Deaths_original
+group by opioids
+
+
+#populate the opioids field in the deaths_main table for the new records
+update deaths_main 
+inner join Deaths_original on deaths_main.stateid=Deaths_original.ST_FILE_NBR
+set deaths_main.opioids=Deaths_original.opioids
+
+
+
+#export data for R analysis
+select STATEID,FIRSTNAME,MIDDLENAME,LASTNAME,MAIDENNAME,SUFFIX,BIRTHDATE,DEATHDATE,GENDER,RACE,
+HISPANICETHNICITY,AGEYEARS,RESADDRESS,RESSTATE,RESCITY,ZIP,ARMEDFORCES,YEARSEDUCATION,OCCUPATION,
+INDUSTRY,MARITALSTATUS,PLACETYPE,DEATHCITY,DEATHCOUNTY,MANNERDEATH,INJURY_DATE,INJURYPLACE,
+INJURYSTATE,INJURYCOUNTY,INJURYDESC,CAUSEA,CAUSEB,agegroup, year(deathdate) as deathyr
+from deaths_main
+where opioids='true'
+
+
+select *
+from Deaths_original
+where opioids is null and injury_desc like '%DRUG%'
+
+select causea, causeb, causec, caused, injurydesc
+from deaths_main
+where opioids='true' and causea like '%MIXED DRUG%'
+and year(deathdate)='2016'
