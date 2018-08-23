@@ -5,6 +5,7 @@ build-data/*
 .tables.debug
 !components
 !components/*
+!queries/*.sql
 
 
 # Common
@@ -63,7 +64,7 @@ coverage
 
 # Logs and databases
 *.log
-*.sql
+#*.sql
 *.sqlite
 
 # OS generated files

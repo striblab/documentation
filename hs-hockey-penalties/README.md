@@ -27,7 +27,10 @@ We do some analysis with [Idyll](https://idyll-lang.org/).
   - `npm install idyll -g`
 - Collect data from the database.
   - To connect to the database, set the `HS_HOCKEY_DATABASE_URI` environment variable
-  - Run: `node lib/analysis-data.js`
+  - Run: `npm run data-analysis`
   - This will read all the SQL files in `queries/` and create JSON files in `build-data/`
+- To build and run the [Idyll](https://idyll-lang.org/) page to see the analysis, run the following:
+  - `npm run start`
+  - To build once: `npm run build`
 - To sync up to S3:
   - `aws s3 --profile=profile sync ./build/ s3://bucket/data-notebooks/hs-hockey-penalties/`

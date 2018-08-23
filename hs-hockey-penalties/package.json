@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "analysis-data": "node lib/analysis-data.js",
-    "start": "npm run analysis-data && idyll index.idyll --defaultComponents=components/default --theme github --layout none --css static/styles.css --datasets build-data --watch",
-    "build": "npm run analysis-data && idyll index.idyll --defaultComponents=components/default --theme github --layout none --css static/styles.css --datasets build-data",
-    "deploy": "npm run build && gh-pages -d ./build"
+    "data-analysis": "node lib/analysis-data.js",
+    "start": "npm run data-analysis && idyll index.idyll --defaultComponents=components/default --theme github --layout none --css static/styles.css --datasets build-data --watch",
+    "build": "npm run data-analysis && idyll index.idyll --defaultComponents=components/default --theme github --layout none --css static/styles.css --datasets build-data"
   },
   "author": "",
   "license": "ISC",

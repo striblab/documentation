@@ -223,6 +223,115 @@ Just the `major_penalty`s.
   width:700
   height:300 /]
 
+## Head penalties
+
+The following shows average penalties per game for all head penalties including **Blows to the Head**, **Head contact**, **Checking to Head/Neck**, **Head Butting**, and **Illegal Check to the Head**.
+
+[data name:"headPenaltiesBySeason" source:"head-penalties-by-season.json" /]
+[LineChart
+  options:`{
+    responsive: true,
+    title: {
+      display: true,
+      text: "Head penalties per game by season."
+    },
+    scales: {
+      yAxes: [{
+        display: true,
+        ticks: {
+          suggestedMin: 0
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Head penalties per game'
+        }
+      }],
+      xAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: 'Season'
+        }
+      }]
+    }
+  }`
+  data:`{
+    labels: headPenaltiesBySeason.map(d => d.season_name),
+    datasets: [{
+      lineTension: 0,
+      label: "All head penalties",
+      fill: false,
+      borderColor: colors[0],
+      data: headPenaltiesBySeason.map(d => d.avg_head_penalties)
+    }, {
+      lineTension: 0,
+      label: "Major head penalties",
+      fill: false,
+      borderColor: colors[1],
+      data: headPenaltiesBySeason.map(d => d.avg_head_penalties_major)
+    }, {
+      lineTension: 0,
+      label: "Minor head penalties",
+      fill: false,
+      borderColor: colors[2],
+      data: headPenaltiesBySeason.map(d => d.avg_head_penalties_minor)
+    }]
+  }`
+  width:700
+  height:300 /]
+
+The following shows average penalties per game for just the following head penalties **Head contact**, **Checking to Head/Neck**, and **Illegal Check to the Head**.  This is not significanlty different from all the head penalties above.
+
+[LineChart
+  options:`{
+    responsive: true,
+    title: {
+      display: true,
+      text: "Limited head penalties per game by season."
+    },
+    scales: {
+      yAxes: [{
+        display: true,
+        ticks: {
+          suggestedMin: 0
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Limited head penalties per game'
+        }
+      }],
+      xAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: 'Season'
+        }
+      }]
+    }
+  }`
+  data:`{
+    labels: headPenaltiesBySeason.map(d => d.season_name),
+    datasets: [{
+      lineTension: 0,
+      label: "Limited head penalties",
+      fill: false,
+      borderColor: colors[0],
+      data: headPenaltiesBySeason.map(d => d.avg_focused_head_penalties)
+    }, {
+      lineTension: 0,
+      label: "Major limited head penalties",
+      fill: false,
+      borderColor: colors[1],
+      data: headPenaltiesBySeason.map(d => d.avg_focused_head_penalties_major)
+    }, {
+      lineTension: 0,
+      label: "Minor limited head penalties",
+      fill: false,
+      borderColor: colors[2],
+      data: headPenaltiesBySeason.map(d => d.avg_focused_head_penalties_minor)
+    }]
+  }`
+  width:700
+  height:300 /]
+
 ## By team
 
 The following table shows the number of penalties by each team for each full season.  It is sorted by `penalties_per_game`.
