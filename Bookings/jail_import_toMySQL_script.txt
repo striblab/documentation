@@ -17,7 +17,8 @@ CREATE TABLE temp_detention
 	DetentionControllingAgencyORIName varchar(100),
 	DetentionTypeCode varchar(3),
 	DetentionJuvenileIndicator varchar(10),
-	stribimportdate datetime
+	stribimportdate datetime,
+dettypedesc varchar(120)
 	)
 	;
 	
@@ -313,8 +314,43 @@ select * from temp_detention;
 insert into Jail_Charge
 select * from temp_charge;
 #done
-insert into Jail_Client
-select * from temp_Client;
+
+
+
+###NOTE -- this only adds the new client records that we don't already have
+
+insert into Jail_Client(	DetentionFacilityORIIdentifier ,
+	DetentionFacilityClientIdentifier,
+	DetentionFacilityClientNumber,
+	ClientFirstName,
+	ClientMiddleName ,
+	ClientLastName ,
+	ClientSuffixName,
+	ClientBirthDate ,
+	ClientRaceCode,
+	ClientRaceText,
+	ClientGenderCode ,
+	ClientGenderText,
+	ClientJuvenileIndicator ,
+stribimportdate)
+select DetentionFacilityORIIdentifier ,
+	DetentionFacilityClientIdentifier,
+	DetentionFacilityClientNumber,
+	ClientFirstName,
+	ClientMiddleName ,
+	ClientLastName ,
+	ClientSuffixName,
+	ClientBirthDate ,
+	ClientRaceCode,
+	ClientRaceText,
+	ClientGenderCode ,
+	ClientGenderText,
+	ClientJuvenileIndicator ,
+stribimportdate
+ from temp_Client
+where detentionfacilityclientnumber not in
+(select detentionfacilityclientnumber from Jail_Client)
+;
 
 
 #done
@@ -325,6 +361,13 @@ select * from temp_CourtCase;
 insert into Jail_Offense
 select * from temp_Offense;
 
+
+
+#populate Jail Detention with the detention type code so we don't need it as part of the join
+
+update Jail_Detention 
+inner join Jail_lkup_dettype on DetentionTypeCode=DetCode
+set dettypedesc=DetDesc
 
 
 
@@ -341,17 +384,22 @@ OPTIMIZE TABLE Jail_Offense;
 update newsroomdata.inventory set lastupdate=now() where idnumber=77 or idnumber=78 or idnumber=79 or idnumber=80;
 
 
-
-
-SELECT       b.DETNextRDetentionID, a.detentionfacilityclientnumber as facilityclientnumber, a.ClientFirstName, a.ClientMiddleName, a.ClientLastName, a.ClientSuffixName, 
-                         a.ClientBirthDate, a.clientracetext, a.clientgendercode, b.DetentionStartDateTime as startdatetime, 
-                         b.DetentionEndDateTime as enddatetime, b.DetentionFacilityORIName as FacilityORIName, b.DetentionHoldReasonText as HoldReasonText,
+#query for Uniquery
+#this query isn't working -- taking forever to run
+create table temp_uq_jail
+SELECT       a.detentionfacilityclientnumber as facilityclientnumber, a.ClientFirstName, a.ClientMiddleName, a.ClientLastName, 
+a.ClientSuffixName, a.ClientBirthDate, a.clientracetext, a.clientgendercode, b.DetentionStartDateTime as startdatetime, 
+                         b.DetentionEndDateTime as enddatetime, b.DetentionFacilityORIName as FacilityORIName, 
+b.DetentionHoldReasonText as HoldReasonText,
 						 b.DetentionEndReasonText as EndReasonText, 
-                         c.DetentionOffenseSequenceNumber as OffenseSequenceNumber, c.DetentionOffenseStatuteChapterCode as OffenseStatuteChapterCode,
+                         c.DetentionOffenseSequenceNumber as OffenseSequenceNumber, 
+c.DetentionOffenseStatuteChapterCode as OffenseStatuteChapterCode,
 						 c.DetentionOffenseStatuteSectionCode as OffenseStatuteSectionCode, 
-                         c.DetentionOffenseStatuteSequenceCode as OffenseStatuteSequenceCode, c.DetentionOffenseMOCcode as OffenseMOCcode, 
+                         c.DetentionOffenseStatuteSequenceCode as OffenseStatuteSequenceCode, 
+c.DetentionOffenseMOCcode as OffenseMOCcode, 
 						 c.DetentionOffenseText as OffenseText, 
-                         b.DetentionControllingAgencyORIName as ControllingAgencyORIName, e.DetDesc, d.DetentionCourtCaseIdentifier as CourtCaseIdentifier, 
+                         b.DetentionControllingAgencyORIName as ControllingAgencyORIName, 
+e.DetDesc, d.DetentionCourtCaseIdentifier as CourtCaseIdentifier, 
                          d.DetentionCourtCaseSentenceStartDate as CourtCaseSentenceStartDate
 FROM            Jail_Detention b INNER JOIN
                          Jail_Client a ON b.detentionfacilityclientnumber = a.detentionfacilityclientnumber INNER JOIN
@@ -359,6 +407,26 @@ FROM            Jail_Detention b INNER JOIN
                          Jail_CourtCase d ON c.DETNextRDetentionID = d.DETNextRDetentionID LEFT OUTER JOIN
                          Jail_lkup_dettype e ON b.DetentionTypeCode = e.DetCode
 WHERE       clientlastname is not null
+
+
+
+
+#alternateive approach -- doesn't include the offense or the courtcase informatio
+
+SELECT       a.detentionfacilityclientnumber as facilityclientnumber, a.ClientFirstName, a.ClientMiddleName, a.ClientLastName, 
+a.ClientSuffixName, a.ClientBirthDate, a.clientracetext, a.clientgendercode, b.DetentionStartDateTime as startdatetime, 
+                         b.DetentionEndDateTime as enddatetime, b.DetentionFacilityORIName as FacilityORIName, 
+b.DetentionHoldReasonText as HoldReasonText,
+						 b.DetentionEndReasonText as EndReasonText,b.DetentionControllingAgencyORIName as ControllingAgencyORIName, dettypedesc
+FROM            Jail_Detention b INNER JOIN
+                         Jail_Client a ON b.detentionfacilityclientnumber = a.detentionfacilityclientnumber
+WHERE       clientlastname is not null
+
+
+ 
+
+
+
 
 
 

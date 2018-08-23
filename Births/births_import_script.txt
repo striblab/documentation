@@ -120,9 +120,9 @@ CREATE TABLE `births_temp` (
   KEY `idx_MTHR_MARRIED` (`MTHR_MARRIED`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 
+;
 
-
-LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\VitalRecords\\births2016.csv' into table births_temp fields terminated by ',' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+LOAD DATA LOCAL INFILE 'W:\\Uniquery_PANDA\\VitalRecords\\Births2017_newheaders.csv' into table births_temp fields terminated by ',' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
 (@ST_FILE_NBR,
 @MTHR_DESIGNATED_PUBLIC,
 @CHLD_FRST_NME,
@@ -315,21 +315,42 @@ stribimportdate=NOW()
 
 update births_temp set birthyear=year(CHLD_BRTH_DT);
 
+;
 
 ##CHECK TO MAKE SURE EVERYTHING FELL INTO THE RIGHT COLUMN;
 #RUN  A COUPLE GROUP BY QUERIES TO MAKE SURE IT WORKED
 
+select *
+from births_temp
+limit 100
+
+;
+
+select fthr_mail_cnty, count(*)
+from births_temp
+group by fthr_mail_cnty
+
+;
+
+select plc_brth_type, count(*)
+from births_temp
+group by PLC_BRTH_TYPE
+
+
+
 #############################################################################
 #UNCOMMENT THE QUERIES BELOW TO INSERT NEW DATA INTO THE MAIN TABLE
-#insert into births_main
-#select * from births_temp
+insert into births_main
+select * from births_temp
 ;
 
 
-#update newsroomdata.inventory set lastupdate=now() where idnumber=4;
+update newsroomdata.inventory set lastupdate=now() where idnumber=4;
 
-#OPTIMIZE TABLE births_main;
+OPTIMIZE TABLE births_main;
 
 
 ######################################################
-#transfer births_main to db1 for Uniquery; delete the old table from there FIRST
+##getting data to PANDA
+#export the births_temp file and add it to the existing records
+#it needs to include all the original fields, plus birthyear and stribimportdate
