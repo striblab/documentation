@@ -17,7 +17,7 @@ Analysis for reporters: Use the SQL script called "mca_analysis"; this has a ser
 
 There are also queries in there for the graphics we typically do every year. 
 
-To get the data for Jeff's dataviz:  The R script called "process_data" will pull the data from mySQL (this takes a little while to run) and then it does a bunch of joining and runs the regression analysis. When it's finished, it will spit out a csv file to your working directory called "mca_dataviz.csv". This file can replace the existing data in Jeff's dataviz. 
+To get the data for Jeff's dataviz:  The R script called "process__test_score_data.R" will pull the data from mySQL (this takes a little while to run) and then it does a bunch of joining and runs the regression analysis. When it's finished, it will spit out a csv file to your working directory called "mca_dataviz.csv". This file can replace the existing data in Jeff's dataviz. 
 
 The main thing to watch for on this is to see if the regression ran ok -- the fields called predicted, residual and categoryname should be populated for all records. I tested this using last year's data and it ran perfectly, so it should be fine.
 
