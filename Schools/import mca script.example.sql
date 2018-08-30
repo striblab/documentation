@@ -1,8 +1,10 @@
+-- This is an example (or the last script used) for importing data
+-- into the database.  Check the README for instructions on what needs
+-- to be adjusted.
 
-
-#mca 3 --2017- reading
-
-LOAD DATA LOCAL INFILE 'W:\\2017MCA3ReadingPublicFilter9.txt' into table mca fields terminated by '\t' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+-- --
+-- MCA Reading: 2018
+LOAD DATA LOCAL INFILE '/Users/palazad/Code/star/data-documentation/Schools/sources/2018MCA3ReadingPublicFilter9.tab' into table mca fields terminated by '\t' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
 (@dataYear,
 @DistrictCountyNumber,
 @DistrictCountyName,
@@ -129,10 +131,9 @@ CountNotEnrolled=@CountNotEnrolled;
 
 
 
-
-##MCA3 -- 2017-- MATH
-
-LOAD DATA LOCAL INFILE 'W:\\2017MCA3MathPublicFilter9.txt' into table mca fields terminated by '\t' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
+-- --
+-- MCA Math: 2018
+LOAD DATA LOCAL INFILE '/Users/palazad/Code/star/data-documentation/Schools/sources/2018MCA3MathPublicFilter9.tab' into table mca fields terminated by '\t' enclosed by '"' lines terminated by '\r\n' ignore 1 lines
 (@dataYear,
 @DistrictCountyNumber,
 @DistrictCountyName,
@@ -261,8 +262,12 @@ CountNotAttempted=@CountNotAttempted,
 CountNotEnrolled=@CountNotEnrolled;
 
 
-#this populates schoolid field
+-- --
+-- this populates schoolid field
 update mca set schoolid=concat(trim(districtnumber),'-',trim(districttype),'-',trim(schoolnumber))
-where schoolid is null ;
+where schoolid is null;
 
-optimize table mca
+
+-- --
+-- Cleanup/optimize table
+optimize table mca;
