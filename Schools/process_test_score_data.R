@@ -229,16 +229,43 @@ testscores %>% filter(categorynum==99) %>% select(schoolid, PctPoverty, PctProf,
 
 #names(testscores)
 
-#put fields in order for dataviz
-
+# Order and rename fields for beating the odds graphic
 dataviz_export <-  testscores %>%
-  select(uniqueID, schoolid, districtnumber, districtType.x, schoolnumber, districtname_new, SCHOOLNAME_NEW, Classification, SchoolType,
-         grades_new, Metro7county, Location, SchoolLocationCountyName, datayear_new, subject, cntTested, cntlev1, cntlev2, cntlev3,
-         cntlev4, numproficient, PctProf, k12enrollment, PctPoverty, pctminority, predicted, residual, Notes, categorynum, categoryname, PovertyCategory)%>%
-  rename(districttype=districtType.x, datayr=datayear_new, grds=grades_new)
+  select(uniqueid=uniqueID, 
+         SchoolID=schoolid, 
+         districtnumber=districtnumber, 
+         districttype=districtType.x, 
+         schoolnumber=schoolnumber, 
+         districtname_new=districtname_new, 
+         SCHOOLNAME_NEW=SCHOOLNAME_NEW, 
+         Classification=Classification, 
+         SchoolType=SchoolType,
+         grds=grades_new, 
+         Metro7county=Metro7county,
+         Location=Location, 
+         SchoolLocationCountyName=SchoolLocationCountyName, 
+         datayr=datayear_new, 
+         subject=subject, 
+         cntTested=cntTested, 
+         cntlev1, 
+         cntlev2, 
+         cntlev3,
+         cntlev4, 
+         numproficient, 
+         PctProf, 
+         k12enrollment, 
+         PctPoverty, 
+         pctminority, 
+         predicted, 
+         residual, 
+         Notes, 
+         categorynum, 
+         categoryname, 
+         PovertyCategory)%>%
+#rename(districttype=districtType.x, datayr=datayear_new, grds=grades_new)
 
 #export CSV for data visualization
-write.csv(dataviz_export, "mca_dataviz.csv")
+write.csv(dataviz_export, "outputs/beating-the-odds-mca-dataviz.csv")
 
 
 
