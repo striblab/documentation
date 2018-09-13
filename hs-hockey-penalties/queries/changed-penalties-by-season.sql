@@ -6,8 +6,10 @@ SELECT
   AVG(gp.boarding_penalties) AS avg_boarding_penalties,
   SUM(gp.checking_penalties) AS total_checking_penalties,
   AVG(gp.checking_penalties) AS avg_checking_penalties,
-  SUM(gp.both_penalties) AS total_both_penalties,
-  AVG(gp.both_penalties) AS avg_both_penalties
+  SUM(gp.head_penalties) AS total_head_penalties,
+  AVG(gp.head_penalties) AS avg_head_penalties,
+  SUM(gp.nonhead_penalties) AS total_nonhead_penalties,
+  AVG(gp.nonhead_penalties) AS avg_nonhead_penalties
 FROM
   hs_hockey_penalty_games AS g
   INNER JOIN
@@ -26,9 +28,13 @@ FROM
           THEN 1 ELSE 0
         END) AS checking_penalties,
         SUM(CASE
+          WHEN penalties.penalty IN ('Head contact')
+          THEN 1 ELSE 0
+        END) AS head_penalties,
+        SUM(CASE
           WHEN penalties.penalty IN ('Boarding', 'Checking from Behind')
           THEN 1 ELSE 0
-        END) AS both_penalties
+        END) AS nonhead_penalties
       FROM
         hs_hockey_penalty_games AS games
           LEFT JOIN hs_hockey_penalty_penalties AS penalties
