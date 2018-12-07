@@ -18,6 +18,7 @@ In the 2011-2012 season, Jack Jablonski was paralyzed by an injury in a high sch
 [data name:"penaltiesByTeam" source:"penalties-by-team.json" /]
 [data name:"penaltiesByScore" source:"penalties-by-score.json" /]
 [data name:"penaltiesByPeriod" source:"penalties-by-period.json" /]
+[data name:"checkingRoughingPenaltiesBySeason" source:"checking-roughing-penalties-by-season.json" /]
 
 ## All penalties
 
@@ -571,6 +572,114 @@ Raw number of penalties
       label: "Checking from Behind penalties",
       backgroundColor: penaltyColors[1],
       data: changedPenaltiesBySeason.map(d => d.total_checking_penalties)
+    }]
+  }`
+  width:700
+  height:300 /]
+
+## Cross-checking and roughing
+
+Let's look at `cross-checking` by season, also broken out by major and minor.
+
+[LineChart
+  options:`{
+    responsive: true,
+    title: {
+      display: true,
+      text: "Cross-checking by season."
+    },
+    scales: {
+      yAxes: [{
+        display: true,
+        ticks: {
+          suggestedMin: 0
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Average penalties per game'
+        }
+      }],
+      xAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: 'Season'
+        }
+      }]
+    }
+  }`
+  data:`{
+    labels: checkingRoughingPenaltiesBySeason.map(d => d.season_name),
+    datasets: [{
+      lineTension: 0,
+      label: "All cross-checking",
+      fill: false,
+      borderColor: severityColors[0],
+      data: checkingRoughingPenaltiesBySeason.map(d => d.avg_cross_checking_penalties)
+    }, {
+      lineTension: 0,
+      label: "Major cross-checking",
+      fill: false,
+      borderColor: severityColors[1],
+      data: checkingRoughingPenaltiesBySeason.map(d => d.avg_cross_checking_penalties_major)
+    }, {
+      lineTension: 0,
+      label: "Minor cross-checking",
+      fill: false,
+      borderColor: severityColors[2],
+      data: checkingRoughingPenaltiesBySeason.map(d => d.avg_cross_checking_penalties_minor)
+    }]
+  }`
+  width:700
+  height:300 /]
+
+And `roughing` by season, also broken out by major and minor.
+
+[LineChart
+  options:`{
+    responsive: true,
+    title: {
+      display: true,
+      text: "Roughing by season."
+    },
+    scales: {
+      yAxes: [{
+        display: true,
+        ticks: {
+          suggestedMin: 0
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Average penalties per game'
+        }
+      }],
+      xAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: 'Season'
+        }
+      }]
+    }
+  }`
+  data:`{
+    labels: checkingRoughingPenaltiesBySeason.map(d => d.season_name),
+    datasets: [{
+      lineTension: 0,
+      label: "All Roughing",
+      fill: false,
+      borderColor: severityColors[0],
+      data: checkingRoughingPenaltiesBySeason.map(d => d.avg_roughing_penalties)
+    }, {
+      lineTension: 0,
+      label: "Major Roughing",
+      fill: false,
+      borderColor: severityColors[1],
+      data: checkingRoughingPenaltiesBySeason.map(d => d.avg_roughing_penalties_major)
+    }, {
+      lineTension: 0,
+      label: "Minor Roughing",
+      fill: false,
+      borderColor: severityColors[2],
+      data: checkingRoughingPenaltiesBySeason.map(d => d.avg_roughing_penalties_minor)
     }]
   }`
   width:700
