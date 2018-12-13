@@ -1,5 +1,6 @@
 SELECT
   g.season_name,
+  COUNT(gp.id) AS game_count,
   SUM(gp.all_penalties) AS total_penalties,
   AVG(gp.all_penalties) AS avg_penalties,
   SUM(gp.boarding_penalties) AS total_boarding_penalties,

@@ -1,9 +1,11 @@
 SELECT
   g.season_name,
+  SUM(gp.cross_checking_penalties) AS sum_cross_checking_penalties,
   AVG(gp.cross_checking_penalties) AS avg_cross_checking_penalties,
   AVG(gp.cross_checking_penalties_minor) AS avg_cross_checking_penalties_minor,
   AVG(gp.cross_checking_penalties_major) AS avg_cross_checking_penalties_major,
   AVG(gp.roughing_penalties) AS avg_roughing_penalties,
+  SUM(gp.roughing_penalties) AS sum_roughing_penalties,
   AVG(gp.roughing_penalties_minor) AS avg_roughing_penalties_minor,
   AVG(gp.roughing_penalties_major) AS avg_roughing_penalties_major
 FROM

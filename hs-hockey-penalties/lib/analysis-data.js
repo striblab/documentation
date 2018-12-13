@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const mysql = require('mysql');
 const glob = require('glob');
+const csv = require('d3-dsv').dsvFormat(',');
 require('dotenv').load();
 
 // Connect to DB
@@ -32,7 +33,8 @@ glob(path.join(__dirname, '..', 'queries', '*.sql'), async (error, files) => {
   await Promise.all(
     files.map(f => {
       let sql = fs.readFileSync(f, 'utf-8');
-      let output = path.join(outputDir, `${path.basename(f, '.sql')}.json`);
+      let jsonOutput = path.join(outputDir, `${path.basename(f, '.sql')}.json`);
+      let csvOutput = path.join(outputDir, `${path.basename(f, '.sql')}.csv`);
       console.error(`Reading and executing: ${f}`);
 
       return new Promise((resolve, reject) => {
@@ -41,8 +43,9 @@ glob(path.join(__dirname, '..', 'queries', '*.sql'), async (error, files) => {
             return reject(error);
           }
 
-          console.error(`Writing: ${output}`);
-          fs.writeFileSync(output, JSON.stringify(results));
+          console.error(`Writing: ${jsonOutput}`);
+          fs.writeFileSync(jsonOutput, JSON.stringify(results));
+          fs.writeFileSync(csvOutput, csv.format(results));
           resolve();
         });
       });
