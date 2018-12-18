@@ -20,7 +20,50 @@ In the 2011-2012 season, Jack Jablonski was paralyzed by an injury in a high sch
 [data name:"penaltiesByPeriod" source:"penalties-by-period.json" /]
 [data name:"checkingRoughingPenaltiesBySeason" source:"checking-roughing-penalties-by-season.json" /]
 
+
 ## All penalties
+
+The number of games each season can change, so it makes sense to measure the change in penalties as "penalties per game".
+
+[BarChart
+  options:`{
+    responsive: true,
+    title: {
+      display: true,
+      text: "Games per season."
+    },
+    scales: {
+      yAxes: [{
+        display: true,
+        ticks: {
+          suggestedMin: 0
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Number of games'
+        }
+      }],
+      xAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: 'Season'
+        }
+      }]
+    }
+  }`
+  data:`{
+    labels: changedPenaltiesBySeason.map(d => d.season_name),
+    datasets: [{
+      lineTension: 0,
+      label: "Games",
+      backgroundColor: seasonColors[0],
+      data: changedPenaltiesBySeason.map(d => d.game_count)
+    }]
+  }`
+  width:700
+  height:300 /]
+
+## Games per season
 
 Penalties per game for each year.
 
