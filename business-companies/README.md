@@ -15,6 +15,8 @@ Migration from Microsoft Access files into the Data Drop database was [managed i
 
 In 2018, we started using Reuters/Eikon data to populate the some of the financial parts of the Top 50.
 
+**Note**: Getting data programattically was too dofficult, so the Business Department will pull data into an Excel sheet and that is important.  See [most recent project](https://github.com/striblab/2019-business-strib-50) for how that gets used.
+
 ### Dependencies
 
 To access the Eikon API, you need to be running the Eikon application (Windows only) or there is a [Eikon API Proxy](https://developers.thomsonreuters.com/eikon-data-apis/downloads) application that can work on multiple platforms such as Mac. You will need an Eikon account to run the application.
