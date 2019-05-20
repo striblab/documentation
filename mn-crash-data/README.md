@@ -1,3 +1,5 @@
+**Note**, this data was not loaded into the Data Drop DB with this script.  The information below and code here was a beginning at trying to geocode the data, but was not fully realized.
+
 # MN crash data
 
 _Data obtained from ?? <need to fill in>_
