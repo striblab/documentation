@@ -1,0 +1,767 @@
+This is SQL written for importing older data files for deaths between 1985 and 1999. MDH gave us three separate files, each with slightly different structures. Thankfully the fields that do match across the three use the same names. 
+
+
+
+select *
+from dths85_88
+limit 100
+
+select dthyear, injcityfips, dthcityfips, cityresfips, count(*)
+from dths85_88
+group by dthyear, injcityfips, dthcityfips, cityresfips
+order by 2 desc
+
+alter table dths85_88
+add column dth_city_desc varchar(50),
+add column res_city_desc varchar(50),
+add column inj_city_desc varchar(50)
+;
+
+create index idx_fieldname on dths8090_codes(fieldname);
+
+create index idx_code on dth_city_codes_pre92 (city_code);
+create index idx_inj_city_code on dths85_88(injcityfips);
+create index idx_res_city_code on dths85_88(cityresfips);
+create index idx_dth_city_code on dths85_88(dthcityfips);
+
+
+
+update dths85_88 
+inner join 
+dth_city_codes_pre92 on dths85_88.injcityfips=dth_city_codes_pre92.city_code
+SET
+inj_city_desc=dth_city_codes_pre92.city_desc
+
+;
+
+update dths85_88 
+inner join 
+dth_city_codes_pre92 on dths85_88.dthcityfips=dth_city_codes_pre92.city_code
+SET
+dth_city_desc=dth_city_codes_pre92.city_desc
+
+;
+update dths85_88 
+inner join 
+dth_city_codes_pre92 on dths85_88.cityresfips=dth_city_codes_pre92.city_code
+SET
+res_city_desc=dth_city_codes_pre92.city_desc
+
+
+select *
+from dths85_88
+where inj_city_desc='MINNEAPOLIS' 
+
+select dth_city_desc, count(*)
+from dths85_88
+where codmort='96' 
+group by dth_city_desc
+order by 2 desc
+
+
+
+Alter table dths85_88
+add  dthdate date,
+add  bthdate date,
+add  injdate date;
+
+
+update dths85_88 set dthdate = concat(trim(dthyear),'-',trim(dthmon),'-',trim(dthday));
+update dths85_88 set bthdate = concat(trim(bthyear),'-',trim(BTHMON),'-',trim(BTHDAY))
+
+
+select bthdate, count(*)
+from dths85_88
+group by bthdate
+
+
+select BTHMON, bthday, BTHYEAR
+from dths85_88
+where bthdate='0000-00-00' or bthdate is null
+
+
+select DTHMON, dthday, DTHYEAR
+from dths85_88
+where dthdate='0000-00-00'
+#these all appear to be faulty dates; for example 2/29/1900 didn't exist
+
+
+
+#injdate information not stored in the 85_88 datafile
+
+
+ALTER TABLE dths85_88
+  ADD cores_desc varchar(50) ,
+  ADD hispanic_desc varchar(50) ,
+	ADD marital_desc varchar(50) ,
+ADD race_desc varchar(50) ,
+ADD sex_desc varchar(50) ,
+ADD dthco_desc varchar(50) ,
+ADD stres_desc varchar(50) ,
+add dthstate_desc varchar(50) ,
+add injstate_desc varchar(50) ;
+
+
+
+update dths85_88 b
+inner join dths8090_codes a on b.cores=a.code
+set b.cores_desc = a.description
+where a.fieldname='cores'
+;
+
+
+update dths85_88 b
+inner join dths8090_codes a on b.hispanic=a.code
+set b.hispanic_desc = a.description
+where a.fieldname='hispanic'
+#hispanic not in the 85_88 datafile
+;
+update dths85_88 b
+inner join dths8090_codes a on b.marital=a.code
+set b.marital_desc = a.description
+where a.fieldname='marital'
+;
+update dths85_88 b
+inner join dths8090_codes a on b.race=a.code
+set b.race_desc = a.description
+where a.fieldname='race'
+;
+update dths85_88 b
+inner join dths8090_codes a on b.sex=a.code
+set b.sex_desc = a.description
+where a.fieldname='sex'
+;
+update dths85_88 b
+inner join dths8090_codes a on b.dthco=a.code
+set b.dthco_desc = a.description
+where a.fieldname='dthco'
+;
+
+
+
+update dths85_88 b
+inner join dths8090s_states a on b.dthstate=a.state_code
+set b.dthstate_desc = a.state_desc;
+
+
+update dths85_88 b
+inner join dths8090s_states a on b.injstate=a.state_code
+set b.injstate_desc = a.state_desc;
+
+
+
+update dths85_88 b
+inner join dths8090s_states a on b.stres=a.state_code
+set b.stres_desc = a.state_desc;
+
+alter table  dths85_88
+add placedeathtype varchar(50);
+
+
+
+alter table  dths85_88
+add placedeath_facility varchar(255);
+
+update dths85_88 b
+inner join dths8090_facilities a on b.PDTHFAC=a.facility_code
+set b.placedeath_facility = a.facility_name
+
+;
+alter table dths85_88
+add mannerdeath varchar(50);
+
+update dths85_88 set mannerdeath='SUICIDE' where codmort='95';
+update dths85_88 set mannerdeath='HOMICIDE' where codmort='96';
+update dths85_88 set mannerdeath='ACCIDENTAL' where codmort='90.1' or codmort='90.2' or codmort='91' or codmort='92' or codmort='93' or codmort='94'
+or codmort='94.1'      ;
+
+select codmort, count(*)
+from dths85_88
+group by CODMORT
+order by 1
+
+
+
+##############################################################################################################
+
+
+
+select *
+from dths89_94
+limit 100
+
+select dthyear, injcityfips, dthcityfips, cityresfips, count(*)
+from dths89_94
+group by dthyear, injcityfips, dthcityfips, cityresfips
+order by 2 desc
+
+alter table dths89_94
+add column dth_city_desc varchar(50),
+add column res_city_desc varchar(50),
+add column inj_city_desc varchar(50)
+;
+
+create index idx_code on dth_city_codes_pre92 (city_code);
+
+create index idx_inj_city_code on dths89_94(injcityfips);
+create index idx_res_city_code on dths89_94(cityresfips);
+create index idx_dth_city_code on dths89_94(dthcityfips);
+
+create index idx_inj_city_NEW on dths89_94(injcity);
+create index idx_res_city_NEW on dths89_94(cityres);
+create index idx_dth_city_NEW on dths89_94(dthcity);
+
+
+
+
+update dths89_94 
+inner join 
+dth_city_codes_pre92 on dths89_94.injcityfips=dth_city_codes_pre92.city_code
+SET
+inj_city_desc=dth_city_codes_pre92.city_desc
+
+
+;
+
+update dths89_94 
+inner join 
+dth_city_codes_pre92 on dths89_94.dthcityfips=dth_city_codes_pre92.city_code
+SET
+dth_city_desc=dth_city_codes_pre92.city_desc
+
+
+;
+update dths89_94 
+inner join 
+dth_city_codes_pre92 on dths89_94.cityresfips=dth_city_codes_pre92.city_code
+SET
+res_city_desc=dth_city_codes_pre92.city_desc
+
+
+
+# update city codes for 1992 through 1994
+
+update dths89_94 
+inner join 
+dths8090_citycodes on dths89_94.INJCITY=dths8090_citycodes.city_code
+SET
+inj_city_desc=dths8090_citycodes.city_descr
+
+
+;
+
+update dths89_94 
+inner join 
+dths8090_citycodes on dths89_94.DTHCITY=dths8090_citycodes.city_code
+SET
+dth_city_desc=dths8090_citycodes.city_descr
+
+
+;
+update dths89_94 
+inner join 
+dths8090_citycodes on dths89_94.CITYRES=dths8090_citycodes.city_code
+SET
+res_city_desc=dths8090_citycodes.city_descr
+
+
+
+
+
+select inj_city_desc, count(*)
+from dths89_94
+where codmort='96' 
+group by inj_city_desc
+order by 2 desc
+
+
+
+Alter table dths89_94
+add  dthdate date,
+add  bthdate date,
+add  injdate date;
+
+
+update dths89_94 set dthdate = concat(trim(dthyear),'-',trim(dthmon),'-',trim(dthday));
+update dths89_94 set bthdate = concat(trim(bthyear),'-',trim(BTHMON),'-',trim(BTHDAY))
+
+
+select bthdate, count(*)
+from dths89_94
+group by bthdate
+
+
+select BTHMON, bthday, BTHYEAR
+from dths89_94
+where bthdate='0000-00-00' or bthdate is null
+
+
+select DTHMON, dthday, DTHYEAR
+from dths89_94
+where dthdate='0000-00-00'
+#these all appear to be faulty dates; for example 2/29/1900 didn't exist
+
+
+
+#injdate information not stored in the 85_88 datafile
+
+
+ALTER TABLE dths89_94
+  ADD cores_desc varchar(50) ,
+  ADD hispanic_desc varchar(50) ,
+	ADD marital_desc varchar(50) ,
+ADD race_desc varchar(50) ,
+ADD sex_desc varchar(50) ,
+ADD dthco_desc varchar(50) ,
+ADD stres_desc varchar(50) ,
+add dthstate_desc varchar(50) ,
+add injstate_desc varchar(50) ;
+
+create index idx_cores on dths89_94(cores);
+create index idx_hispanic on dths89_94(hispanic);
+create index idx_marital on dths89_94(marital);
+create index idx_race on dths89_94(race);
+create index idx_sex on dths89_94(sex);
+create index idx_dthco on dths89_94(dthco);
+create index idx_stres on dths89_94(stres);
+create index idx_dthstate on dths89_94(dthstate);
+create index idx_injstate on dths89_94(injstate);
+
+
+update dths89_94 b
+inner join dths8090_codes a on b.cores=a.code
+set b.cores_desc = a.description
+where a.fieldname='cores'
+;
+
+
+update dths89_94 b
+inner join dths8090_codes a on b.hispanic=a.code
+set b.hispanic_desc = a.description
+where a.fieldname='hispanic'
+#hispanic not in the 85_88 datafile
+;
+update dths89_94 b
+inner join dths8090_codes a on b.marital=a.code
+set b.marital_desc = a.description
+where a.fieldname='marital'
+;
+update dths89_94 b
+inner join dths8090_codes a on b.race=a.code
+set b.race_desc = a.description
+where a.fieldname='race'
+;
+update dths89_94 b
+inner join dths8090_codes a on b.sex=a.code
+set b.sex_desc = a.description
+where a.fieldname='sex'
+;
+update dths89_94 b
+inner join dths8090_codes a on b.dthco=a.code
+set b.dthco_desc = a.description
+where a.fieldname='dthco'
+;
+
+
+
+update dths89_94 b
+inner join dths8090s_states a on b.dthstate=a.state_code
+set b.dthstate_desc = a.state_desc;
+
+
+update dths89_94 b
+inner join dths8090s_states a on b.injstate=a.state_code
+set b.injstate_desc = a.state_desc;
+
+
+
+update dths89_94 b
+inner join dths8090s_states a on b.stres=a.state_code
+set b.stres_desc = a.state_desc;
+
+alter table  dths89_94
+add placedeathtype varchar(50);
+
+update dths89_94 
+inner join dths8090_codes on PDTHTYPE=code
+set placedeathtype = description
+where fieldname='pdthtype'
+
+
+
+
+
+alter table  dths89_94
+add placedeath_facility varchar(255);
+
+update dths89_94 b
+inner join dths8090_facilities a on b.PDTHFAC=a.facility_code
+set b.placedeath_facility = a.facility_name
+
+;
+alter table dths89_94
+add mannerdeath varchar(50);
+
+update dths89_94 set mannerdeath='SUICIDE' where codmort='95';
+update dths89_94 set mannerdeath='HOMICIDE' where codmort='96';
+update dths89_94 set mannerdeath='ACCIDENTAL' where codmort='90.1' or codmort='90.2' or codmort='91' or codmort='92' or codmort='93' or codmort='94'
+or codmort='94.1'      ;
+
+select mannerdeath, count(*)
+from dths89_94
+group by mannerdeath
+
+
+update dths85_88 set placedeath_facility='Non-licensed Facility'
+where placedeath_facility='Non?licensed Facility';
+
+update dths89_94 set placedeath_facility='Non-licensed Facility'
+where placedeath_facility='Non?licensed Facility'
+
+
+
+
+
+
+
+#######################################
+#repeat all the steps for the 3rd file and then spit out results for Jeff
+
+
+
+alter table dths95_99
+add column dth_city_desc varchar(50),
+add column res_city_desc varchar(50),
+add column inj_city_desc varchar(50)
+;
+
+
+
+create index idx_inj_city_NEW on dths95_99(injcity);
+create index idx_dth_city_NEW on dths95_99(dthcity);
+
+
+
+
+# update city codes
+
+update dths95_99 
+inner join 
+dths8090_citycodes on dths95_99.INJCITY=dths8090_citycodes.city_code
+SET
+inj_city_desc=dths8090_citycodes.city_descr
+
+
+;
+
+update dths95_99 
+inner join 
+dths8090_citycodes on dths95_99.DTHCITY=dths8090_citycodes.city_code
+SET
+dth_city_desc=dths8090_citycodes.city_descr
+
+
+;
+
+
+
+
+
+Alter table dths95_99
+add  dthdate date,
+add  bthdate date,
+add  injdate date;
+
+
+update dths95_99 set dthdate = concat(trim(dthyear),'-',trim(dthmon),'-',trim(dthday));
+update dths95_99 set bthdate = concat(trim(bthyear),'-',trim(BTHMON),'-',trim(BTHDAY))
+
+
+select bthdate, count(*)
+from dths95_99
+group by bthdate
+
+
+select BTHMON, bthday, BTHYEAR
+from dths95_99
+where bthdate='0000-00-00' or bthdate is null
+
+
+select DTHMON, dthday, DTHYEAR
+from dths95_99
+where dthdate='0000-00-00'
+
+
+
+
+#injdate information not stored in the 85_88 datafile
+
+
+ALTER TABLE dths95_99
+  ADD cores_desc varchar(50) ,
+  ADD hispanic_desc varchar(50) ,
+	ADD marital_desc varchar(50) ,
+ADD race_desc varchar(50) ,
+ADD sex_desc varchar(50) ,
+ADD dthco_desc varchar(50) ,
+ADD stres_desc varchar(50) ,
+add dthstate_desc varchar(50) ,
+add injstate_desc varchar(50) ;
+
+create index idx_cores on dths95_99(cores);
+create index idx_hispanic on dths95_99(hispanic);
+create index idx_marital on dths95_99(marital);
+create index idx_race on dths95_99(race);
+create index idx_sex on dths95_99(sex);
+create index idx_dthco on dths95_99(dthco);
+create index idx_stres on dths95_99(stres);
+create index idx_dthstate on dths95_99(dthstate);
+create index idx_injstate on dths95_99(injstate);
+
+
+update dths95_99 b
+inner join dths8090_codes a on b.cores=a.code
+set b.cores_desc = a.description
+where a.fieldname='cores'
+;
+
+
+update dths95_99 b
+inner join dths8090_codes a on b.hispanic=a.code
+set b.hispanic_desc = a.description
+where a.fieldname='hispanic'
+#hispanic not in the 85_88 datafile
+;
+update dths95_99 b
+inner join dths8090_codes a on b.marital=a.code
+set b.marital_desc = a.description
+where a.fieldname='marital'
+;
+update dths95_99 b
+inner join dths8090_codes a on b.race=a.code
+set b.race_desc = a.description
+where a.fieldname='race'
+;
+update dths95_99 b
+inner join dths8090_codes a on b.sex=a.code
+set b.sex_desc = a.description
+where a.fieldname='sex'
+;
+update dths95_99 b
+inner join dths8090_codes a on b.dthco=a.code
+set b.dthco_desc = a.description
+where a.fieldname='dthco'
+;
+
+
+
+update dths95_99 b
+inner join dths8090s_states a on b.dthstate=a.state_code
+set b.dthstate_desc = a.state_desc;
+
+
+update dths95_99 b
+inner join dths8090s_states a on b.injstate=a.state_code
+set b.injstate_desc = a.state_desc;
+
+
+
+update dths95_99 b
+inner join dths8090s_states a on b.stres=a.state_code
+set b.stres_desc = a.state_desc;
+
+alter table  dths95_99
+add placedeathtype varchar(50);
+
+update dths95_99 
+inner join dths8090_codes on PDTHTYPE=code
+set placedeathtype = description
+where fieldname='pdthtype'
+
+
+
+
+
+alter table  dths95_99
+add placedeath_facility varchar(255);
+
+update dths95_99 b
+inner join dths8090_facilities a on b.PDTHFAC=a.facility_code
+set b.placedeath_facility = a.facility_name
+
+;
+alter table dths95_99
+add mannerdeath varchar(50);
+
+update dths95_99 set mannerdeath='SUICIDE' where codmort='95';
+update dths95_99 set mannerdeath='HOMICIDE' where codmort='96';
+update dths95_99 set mannerdeath='ACCIDENTAL' where codmort='90.1' or codmort='90.2' or codmort='91' or codmort='92' or codmort='93' or codmort='94'
+or codmort='94.1'      ;
+
+select mannerdeath, count(*)
+from dths95_99
+group by mannerdeath
+
+
+update dths95_99 set placedeath_facility='Non-licensed Facility'
+where placedeath_facility='Non?licensed Facility';
+
+update dths95_99 set placedeath_facility='Non-licensed Facility'
+where placedeath_facility='Non?licensed Facility'
+
+
+
+
+#################################################
+
+
+
+select certnum, namef, mi, namelast, sex_desc, age, race_desc, hispanic_desc, marital_desc, dthdate as deathdate, bthdate as birthdate, 
+                         cores_desc, '' as adline1, '' as adline2, '' as adstate, '' as adcity, '' as zip, res_city_desc, dth_city_desc,
+                         inj_city_desc, injdate, codsumm, codgroup, codorig, codext, cond1, cond1x, cond2, cond2x, mannerdeath,
+placedeathtype, placedeath_facility
+from dths85_88
+where mannerdeath='HOMICIDE'
+UNION
+select certnum, namef, mi, namelast, sex_desc, age, race_desc, hispanic_desc, marital_desc, dthdate as deathdate, bthdate as birthdate, 
+                         cores_desc, adline1, adline2,  adstate, adcity, zip, res_city_desc, dth_city_desc,
+                         inj_city_desc, injdate, codsumm, codgroup, codorig, codext, cond1, cond1x, cond2, cond2x, mannerdeath,
+placedeathtype, placedeath_facility
+from dths89_94
+where mannerdeath='HOMICIDE'
+union
+select certnum, namef, mi, namelast, sex_desc, age, race_desc, hispanic_desc, marital_desc, dthdate as deathdate, bthdate as birthdate, 
+                         cores_desc, adline1, adline2,  adstate, adcity, zip, res_city_desc, dth_city_desc,
+                         inj_city_desc, injdate, codsumm, codgroup, codorig, codext, cond1, cond1x, cond2, cond2x, mannerdeath,
+placedeathtype, placedeath_facility
+from dths95_99
+where mannerdeath='HOMICIDE'
+
+select count(*)
+from dths85_
+
+
+
+###################
+select *
+from deaths_main
+where deathdate>='1985-01-01' and deathdate<'2000-01-01'
+
+
+alter table dths85_88 
+add column armedforces varchar(1),
+add column educ_desc varchar(25);
+
+#update dths85_88 set armedforces='Y' where military='1';
+#update dths85_88 set armedforces='N' where military='0';
+
+#update dths85_88 b
+#inner join dths8090_codes a on b.educ=a.code
+#set b.educ_desc = a.description
+#where a.fieldname='educ'
+
+
+alter table dths89_94 
+add column armedforces varchar(1),
+add column educ_desc varchar(25);
+
+
+update dths89_94 set armedforces='Y' where military='1';
+update dths89_94 set armedforces='N' where military='0';
+
+update dths89_94 b
+inner join dths8090_codes a on b.educ=a.code
+set b.educ_desc = a.description
+where a.fieldname='educ'
+
+
+alter table dths95_99 
+add column armedforces varchar(1),
+add column educ_desc varchar(25);
+
+
+update dths95_99 set armedforces='Y' where military='1';
+update dths95_99 set armedforces='N' where military='0';
+
+update dths95_99 b
+inner join dths8090_codes a on b.educ=a.code
+set b.educ_desc = a.description
+where a.fieldname='educ'
+
+
+
+
+
+select CONCAT(dthyear,'-', certnum) as stateid,, namef as firstname, mi as middlename, namelast as lastname, sex_desc as gender, age as ageyears, race_desc as race, hispanic_desc as hispanicethnicity, marital_desc as maritalstatus, 
+ dthdate as deathdate, bthdate as birthdate, 
+                         cores_desc as rescounty, '' as resaddress,  '' as resstate, rescity_desc as rescity, '' as zip,  dth_city_desc as deathcity, DTHSTATE as deathstate,
+                         inj_city_desc as INJCITY, injdate as inj_date,  mannerdeath,
+placedeathtype as placetype, placedeath_facility as facility, educ_desc as education, armedforces, dfathln as fatherlast, dthco_desc as deathcounty
+from dths85_88
+UNION
+select CONCAT(dthyear,'-', certnum) as stateid,, namef as firstname, mi as middlename, namelast as lastname, sex_desc as gender, age as ageyears, race_desc as race, hispanic_desc as hispanicethnicity, marital_desc as maritalstatus, 
+ dthdate as deathdate, bthdate as birthdate, 
+                         cores_desc as rescounty, '' as resaddress,  '' as resstate, rescity_desc as rescity, '' as zip,  dth_city_desc as deathcity, DTHSTATE as deathstate,
+                         inj_city_desc as INJCITY, injdate as inj_date,  mannerdeath,
+placedeathtype as placetype, placedeath_facility as facility, educ_desc as education, armedforces, dfathln as fatherlast, dthco_desc as deathcounty
+union
+select CONCAT(dthyear,'-', certnum) as stateid, namef as firstname, mi as middlename, namelast as lastname, sex_desc as gender, age as ageyears, race_desc as race, hispanic_desc as hispanicethnicity, marital_desc as maritalstatus, 
+ dthdate as deathdate, bthdate as birthdate, 
+                         cores_desc as rescounty, adline1 as resaddress,  ADSTATE as resstate, ADCITY as rescity, zip,  dth_city_desc as deathcity, DTHSTATE as deathstate,
+                         inj_city_desc as INJCITY, injdate as inj_date,  mannerdeath,
+placedeathtype as placetype, placedeath_facility as facility, educ_desc as education, armedforces, dfathln as fatherlast, dthco_desc as deathcounty
+from dths95_99
+
+
+
+
+
+alter table dths85_88
+add column stateid varchar(15);
+
+update dths85_88 set stateid = concat(dthyear, '-MN-', lpad(certnum, 6, 0));
+
+
+alter table dths89_94
+add column stateid varchar(15);
+
+update dths89_94 set stateid = concat(dthyear, '-MN-', lpad(certnum, 6, 0));
+
+alter table dths95_99
+add column stateid varchar(15);
+
+update dths95_99 set stateid = concat(dthyear, '-MN-', lpad(certnum, 6, 0));
+
+
+
+select count(*)
+from dths95_99
+
+select a.stateid, b.stateid, a.lastname, b.namelast
+from deaths_main a inner join dths95_99 b on (a.stateid)=(b.stateid)
+
+update deaths_main set stateid=rtrim(stateid);
+update dths95_99 set stateid=rtrim(stateid);
+update dths85_88 set stateid=rtrim(stateid);
+update dths89_94 set stateid=rtrim(stateid);
+
+
+select *
+from deaths_main
+where deathyear='1997'
+
+select deathyear, count(*)
+from deaths_main
+group by deathyear
+
+select dthyear, count(*)
+from dths95_99
+group by dthyear
+
+select deathyear, SOURCECODE, count(*)
+from deaths_main
+group by deathyear, SOURCECODE
+order by deathyear
+
+
+
