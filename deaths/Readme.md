@@ -1,18 +1,10 @@
 Death certificate data:
 
-Request data from Minnesota Department of Health. No cost. Be sure to have them put it in our Dropoff site. (they tried to email it and it was rejected by our system)
+Request data from Minnesota Department of Health. You need to fill out a request form.  A copy of a recent one is included here. That goes to a unit that then passes it on to one of their data people. In recent years we've been working with Neeti Sethi, who is fabulous. They charge $20 per year, even if you ask for multiple years of data in one batch. Generally you don't need to deal with the media people, although they could help if you run into trouble.
 
-Contact person in 2016 was: 
-SCOTT SMITH
-Public Information Officer
-Minnesota Department of Health
-Communications Office
-p 651 201-5806  |  m 651 503-1440 
-Scott.Smith@state.mn.us
+See separate text file with the list of the fields that we request each year. Neeti has created a query that matches our file structure and the fields come through matching previous years consistently. I fear that this might change if Neeti leaves or no longer works with us.  The import procedures documented below are set up to work with that table structure. 
 
-See separate text file with the list of the fields that we requested (for the 2015 batch of data). The import procedures documented below are set up to work with that table structure. MUST ASK MDH FOR A SPECIFIC SET OF FIELDS AND THAT THEY USE THE SAME FIELD NAMES FOR EVERY REQUEST!!! they keep giving us different formats.
-
-The data is all on the Amazon server, in newsroomdata. Tables: deaths_main, deaths_icd, deaths_race, deaths_other. I have a saved query that has all the import specs and updates that need to be run. I saved a backup of it here on github (in Aug 2017)
+The data is all on the Amazon server, in newsroomdata. Tables: deaths_main, deaths_icd, deaths_race, deaths_other. I have a saved query that has all the import specs and updates that need to be run. I saved a backup of it here on github (updated in Feb 2020)
 
 The data comes as one big flat file, but I've split it into these separate relational tables in order to make it more manageable, especially for Uniquery. The table "deaths_main" has all the fields you'd need for Uniquery and is generally the go-table for anything. 
 
