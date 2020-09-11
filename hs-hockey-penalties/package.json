@@ -22,7 +22,7 @@
     "idyll-vega-lite": "^1.0.2",
     "lodash": "^4.17.5",
     "mysql": "^2.15.0",
-    "node-fetch": "^2.0.0",
+    "node-fetch": "^2.6.1",
     "prettyjson": "^1.2.1",
     "react-chartjs-2": "^2.7.2",
     "sequelize": "^4.37.8",
