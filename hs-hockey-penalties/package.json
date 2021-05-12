@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chart.js": "^2.7.2",
+    "chart.js": "^2.9.4",
     "d3": "^4.0.0",
     "d3-dsv": "^1.0.10",
     "dotenv": "^5.0.1",
